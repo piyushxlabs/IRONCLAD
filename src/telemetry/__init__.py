@@ -1,1 +1,53 @@
-"""IRONCLAD Telemetry and Observability Package."""
+"""Telemetry and observability module for IRONCLAD."""
+
+from src.telemetry.feedback_annotations import (
+    HITLFeedbackAnnotationRecord,
+    record_hitl_feedback,
+)
+from src.telemetry.tracing import (
+    DRAW_NUMBER_ATTR,
+    GEN_AI_OPERATION_NAME,
+    GEN_AI_PROVIDER_NAME,
+    GEN_AI_REQUEST_MODEL,
+    GEN_AI_RESPONSE_MODEL,
+    GEN_AI_USAGE_INPUT_TOKENS,
+    GEN_AI_USAGE_OUTPUT_TOKENS,
+    NODE_NAME_ATTR,
+    PROJECT_ID_ATTR,
+    SESSION_ID_ATTR,
+    SUBCONTRACTOR_ID_ATTR,
+    TOOL_NAME_ATTR,
+    InMemorySpanExporter,
+    TelemetryManager,
+    get_telemetry_manager,
+    get_tracer,
+    trace_agent_invocation,
+    trace_audit_run,
+    trace_model_inference,
+    trace_tool_execution,
+)
+
+__all__ = [
+    "DRAW_NUMBER_ATTR",
+    "GEN_AI_OPERATION_NAME",
+    "GEN_AI_PROVIDER_NAME",
+    "GEN_AI_REQUEST_MODEL",
+    "GEN_AI_RESPONSE_MODEL",
+    "GEN_AI_USAGE_INPUT_TOKENS",
+    "GEN_AI_USAGE_OUTPUT_TOKENS",
+    "NODE_NAME_ATTR",
+    "PROJECT_ID_ATTR",
+    "SESSION_ID_ATTR",
+    "SUBCONTRACTOR_ID_ATTR",
+    "TOOL_NAME_ATTR",
+    "HITLFeedbackAnnotationRecord",
+    "InMemorySpanExporter",
+    "TelemetryManager",
+    "get_telemetry_manager",
+    "get_tracer",
+    "record_hitl_feedback",
+    "trace_agent_invocation",
+    "trace_audit_run",
+    "trace_model_inference",
+    "trace_tool_execution",
+]
