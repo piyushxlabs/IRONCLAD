@@ -114,7 +114,7 @@ class MockRuntime(BaseRuntimeProtocol):
         # Built-in fallback tool responses
         if tool_name == "extract_draw_packet_metadata":
             uri = str(tool_input.get("pdf_uri", ""))
-            if "defect" in uri or "draw_2" in uri:
+            if any(k in uri for k in ("defect", "draw_2", "draw-02", "draw-2")):
                 return {
                     "success": True,
                     "document_type_detected": "G703_CONTINUATION",
@@ -139,7 +139,7 @@ class MockRuntime(BaseRuntimeProtocol):
                     "low_confidence_fields": [],
                     "error": None,
                 }
-            if "edge" in uri or "draw_3" in uri:
+            if any(k in uri for k in ("edge", "draw_3", "draw-03", "draw-3")):
                 return {
                     "success": True,
                     "document_type_detected": "G703_CONTINUATION",

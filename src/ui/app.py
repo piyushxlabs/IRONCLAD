@@ -61,7 +61,7 @@ def get_preset_packet(preset_name: str, runtime_mode: str) -> tuple[IroncladStat
             project_id="PROJ-METRO-02",
             subcontractor_id="SUB-ELECTRICAL-902",
             draw_number=2,
-            source_uris=["s3://ironclad-intake/proj-metro-02/draw-02.pdf"],
+            source_uris=["tests/mocks/fixtures/draw_2_electrical_defect_invoice.pdf"],
         )
         return (
             IroncladState(
@@ -75,7 +75,7 @@ def get_preset_packet(preset_name: str, runtime_mode: str) -> tuple[IroncladStat
             project_id="PROJ-BAY-03",
             subcontractor_id="SUB-HVAC-303",
             draw_number=3,
-            source_uris=["s3://ironclad-intake/proj-bay-03/draw-03.pdf"],
+            source_uris=["tests/mocks/fixtures/draw_3_plumbing_edge_case.pdf"],
         )
         return (
             IroncladState(
@@ -89,7 +89,7 @@ def get_preset_packet(preset_name: str, runtime_mode: str) -> tuple[IroncladStat
             project_id="PROJ-SKYLINE-04",
             subcontractor_id="SUB-CONCRETE-001",
             draw_number=4,
-            source_uris=["s3://ironclad-intake/proj-skyline-04/draw-04.pdf"],
+            source_uris=["tests/mocks/fixtures/draw_4_hvac_invoice.pdf"],
         )
         return (
             IroncladState(
