@@ -123,7 +123,39 @@ class StagingRuntime(BaseRuntimeProtocol):
         tool_input: dict[str, Any],
     ) -> dict[str, Any]:
         """Execute MCP or synthetic tool call in staging environment."""
-        # In staging mode, unbonded external MCP tools fall back cleanly or forward to local execution
+        if tool_name == "extract_draw_packet_metadata":
+            return {
+                "success": True,
+                "document_type_detected": "G703_CONTINUATION",
+                "line_items": [
+                    {
+                        "line_item_id": "LI-001",
+                        "description": "Concrete foundation pour",
+                        "contract_retainage_pct": 0.05,
+                        "current_billed": 12000.00,
+                        "stored_materials": 0.00,
+                        "prior_payments": 36000.00,
+                    }
+                ],
+                "waiver_records": [
+                    {
+                        "waiver_id": "W-001",
+                        "waiver_type": "CONDITIONAL_PROGRESS",
+                        "notary_execution_date": "2026-09-02",
+                        "associated_line_item_id": "LI-001",
+                    }
+                ],
+                "low_confidence_fields": [],
+                "error": None,
+            }
+        if tool_name == "dispatch_decision_notification":
+            recipients = tool_input.get("recipients", ["GENERAL_CONTRACTOR", "OWNER", "SUBCONTRACTOR"])
+            return {
+                "success": True,
+                "dispatched_to": recipients,
+                "error": None,
+            }
+
         return {
             "success": True,
             "tool_name": tool_name,

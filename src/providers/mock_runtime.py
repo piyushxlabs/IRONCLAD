@@ -130,10 +130,8 @@ class MockRuntime(BaseRuntimeProtocol):
                     {
                         "waiver_id": "W-001",
                         "waiver_type": "CONDITIONAL_PROGRESS",
-                        "claim_amount": 11400.00,
-                        "through_date": "2026-09-01",
-                        "notary_date": "2026-09-02",
-                        "signatory_name": "Jane Doe",
+                        "notary_execution_date": "2026-09-02",
+                        "associated_line_item_id": "LI-001",
                     }
                 ],
                 "low_confidence_fields": [],
