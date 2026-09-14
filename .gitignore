@@ -67,3 +67,25 @@ extra.md
 demo video assets/
 *.mp4
 *.mov
+
+# ==========================================
+# Internal Dev & Step-Tracking Artifacts
+# (Hackathon workflow docs — not for public repo)
+# ==========================================
+do_after_completion.md
+project_state.md
+
+# ==========================================
+# Coding Assistant Context Files
+# (Editor/AI-specific — not part of the project)
+# ==========================================
+CLAUDE.md
+.cursorrules
+.agents/rules/
+
+# ==========================================
+# Old README Drafts
+# ==========================================
+README_1.md
+README_*.md
+!README.md
