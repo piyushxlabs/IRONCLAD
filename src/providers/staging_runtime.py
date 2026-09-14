@@ -6,6 +6,7 @@ reasoning with zero AWS IAM credential dependencies for staging and demo hosting
 
 import asyncio
 import os
+import time
 import uuid
 from typing import Any
 
@@ -28,6 +29,17 @@ def _clean_schema_for_gemini(schema: Any) -> Any:
     if isinstance(schema, list):
         return [_clean_schema_for_gemini(item) for item in schema]
     return schema
+
+
+def _safe_log(msg: str) -> None:
+    """Print message to stdout safely across all Windows/Linux console encodings."""
+    try:
+        print(msg)
+    except (UnicodeEncodeError, OSError):
+        try:
+            print(msg.encode("ascii", errors="replace").decode("ascii"))
+        except Exception:
+            pass
 
 
 class StagingRuntime(BaseRuntimeProtocol):
@@ -102,30 +114,50 @@ class StagingRuntime(BaseRuntimeProtocol):
 
         config = types.GenerateContentConfig(**config_kwargs)
 
-        try:
-            response = await client.aio.models.generate_content(
-                model=target_model,
-                contents=contents,
-                config=config,
-            )
+        models_to_try = [target_model]
+        if target_model == "gemini-3.8-flash" and "gemini-3.6-flash" not in models_to_try:
+            models_to_try.append("gemini-3.6-flash")
 
-            if structured_output_schema is not None:
-                if response.text:
-                    return structured_output_schema.model_validate_json(response.text)
-                raise ToolExecutionError(
-                    message="Empty response text returned for structured output request.",
-                    incident_context={"model": target_model, "schema": structured_output_schema.__name__},
-                    node_name="StagingRuntime",
+        for current_model in models_to_try:
+            _safe_log("\n" + "=" * 60)
+            _safe_log(f"🚀 [LIVE GEMINI CALL] Model: {current_model}")
+            _safe_log(f"📝 Prompt Preview: {prompt[:150]}...")
+            start_time = time.time()
+
+            try:
+                response = await client.aio.models.generate_content(
+                    model=current_model,
+                    contents=contents,
+                    config=config,
                 )
+                duration = time.time() - start_time
+                response_text = response.text or ""
+                _safe_log(f"✅ [GEMINI RESPONSE RECEIVED] Model: {current_model} | Latency: {duration:.2f}s")
+                _safe_log(f"📦 Response Content: {response_text[:200]}...")
+                _safe_log("=" * 60 + "\n")
 
-            return response.text or ""
+                if structured_output_schema is not None:
+                    if response.text:
+                        return structured_output_schema.model_validate_json(response.text)
+                    raise ToolExecutionError(
+                        message="Empty response text returned for structured output request.",
+                        incident_context={"model": current_model, "schema": structured_output_schema.__name__},
+                        node_name="StagingRuntime",
+                    )
 
-        except Exception as e:
-            raise ToolExecutionError(
-                message=f"Gemini staging inference failed: {e!s}",
-                incident_context={"model": target_model, "error": str(e)},
-                node_name="StagingRuntime",
-            ) from e
+                return response.text or ""
+
+            except Exception as e:
+                _safe_log(f"❌ [GEMINI API ERROR on {current_model}]: {e}")
+                if current_model != models_to_try[-1] and any(code in str(e) for code in ("503", "429", "UNAVAILABLE", "RESOURCE_EXHAUSTED")):
+                    _safe_log(f"🔄 Retrying with fallback model {models_to_try[-1]}...")
+                    continue
+                _safe_log("=" * 60 + "\n")
+                raise ToolExecutionError(
+                    message=f"Gemini staging inference failed: {e!s}",
+                    incident_context={"model": current_model, "error": str(e)},
+                    node_name="StagingRuntime",
+                ) from e
 
     async def call_mcp_tool(
         self,

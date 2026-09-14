@@ -20,6 +20,10 @@ import os
 import subprocess
 import sys
 
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
 
 def run_fastapi_server(port: int = 8000, host: str = "0.0.0.0", reload: bool = True) -> None:
     """Starts the non-blocking FastAPI SSE bridge server."""
@@ -60,7 +64,7 @@ def check_status() -> None:
     print("IRONCLAD SENTINEL SYSTEM STATUS CHECK")
     print("=" * 60)
     print(f"Python Version: {sys.version.split()[0]}")
-    print(f"Active Runtime Mode: {os.getenv('IRONCLAD_RUNTIME_MODE', 'mock')}")
+    print(f"Active Runtime Mode: {os.getenv('IRONCLAD_RUNTIME_MODE', 'staging')}")
 
     try:
         from src.server import app as fastapi_app

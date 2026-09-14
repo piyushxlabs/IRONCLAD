@@ -28,6 +28,18 @@ from src.state.schema import (
 from src.structured_outputs.rider_clause_classification import RiderClauseClassification
 from src.tools.statutory_prompt_pay_clock import statutory_prompt_pay_clock
 
+
+def _safe_log(msg: str) -> None:
+    """Print message to stdout safely across all Windows/Linux console encodings."""
+    try:
+        print(msg)
+    except (UnicodeEncodeError, OSError):
+        try:
+            print(msg.encode("ascii", errors="replace").decode("ascii"))
+        except Exception:
+            pass
+
+
 MAX_NODE_CALLS = 4
 
 FAIR_PAY_STATUTORY_GUARDIAN_SYSTEM_PROMPT = """<identity_and_role>
@@ -145,6 +157,10 @@ async def fair_pay_statutory_guardian_node(
                 "or 'pay-when-paid'. If contradictory or ambiguous, mark ambiguous=True."
             )
 
+            _safe_log(f"🔍 [STATUTORY GUARDIAN] Invoking LLM for Rider Classification (Invoker: {type(invoker).__name__ if invoker else 'None'})...")
+            if invoker is None:
+                raise ValueError("ModelInvoker is None")
+
             classification_result = await invoker.invoke_reasoning(
                 prompt=rider_prompt,
                 system_prompt=FAIR_PAY_STATUTORY_GUARDIAN_SYSTEM_PROMPT,
@@ -165,7 +181,8 @@ async def fair_pay_statutory_guardian_node(
                 )
             else:
                 classified_clause = classification_result.contract_clause
-        except Exception:
+        except Exception as e:
+            _safe_log(f"⚠️ [STATUTORY GUARDIAN] Bypassed LLM: Falling back to heuristic rule because invoker error: {e}")
             # Deterministic fallback logic to preserve system availability
             is_edge_case = any(
                 k in str(state.draw_packet_meta.source_uris).lower() or k in state.draw_packet_meta.project_id.lower()

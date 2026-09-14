@@ -37,7 +37,7 @@ const INITIAL_EMPTY_STATE: IroncladState = {
 
 export default function ExecutiveConsolePage() {
   const [state, setState] = useState<IroncladState>(INITIAL_EMPTY_STATE);
-  const [runtimeMode, setRuntimeMode] = useState<string>("mock");
+  const [runtimeMode, setRuntimeMode] = useState<string>("staging");
   const [selectedScenario, setSelectedScenario] = useState<string>("simple_clean");
   const [statusText, setStatusText] = useState<string>("");
   const [isAuditing, setIsAuditing] = useState<boolean>(false);

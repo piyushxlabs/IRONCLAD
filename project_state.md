@@ -1,6 +1,6 @@
 # PROJECT STATE
 
-- Last Completed Step: Forensic Audit Remediation — Full P0/P1/P2 Resolution Across Agents, Tools, Bedrock & Next.js
+- Last Completed Step: Live Gemini 3.8 Flash Invocation & Loud Telemetry Verification
 - Implemented Features:
   - Environment variable scaffolding (`.env.example`, `.env`)
   - Git ignore protections for credentials and local cache artifacts
@@ -33,6 +33,8 @@
   - Next.js 16 App Router Executive Decision Console (`frontend/`) with institutional dark theme, 3-metric KPI tiles, statutory countdown timer, discrepancy data table, 3-button HITL Action Center, and collapsible Forensic Audit Trail with Next.js 16 Turbopack production build passing
   - Unified CLI Development Runner (`run_dev.py`) and entrypoints (`tests/integration/test_unified_runners.py`) orchestrating FastAPI, Streamlit, Bedrock AgentCore, and Next.js 16 with 162/162 tests passing
   - Complete Forensic Remediation across P0/P1/P2 findings: `dispatch_decision_notification` summary parameter added, live ModelInvoker reasoning in `FairPayStatutoryGuardian`, Bedrock cross-region inference IDs, dynamic check date extraction, frontend type synchronization, and fortified UI rendering with 0 ruff errors and 161/161 passed pytest tests
+  - Active Runtime Alignment: Explicit `load_dotenv(override=True)` across FastAPI server and UI runners, dynamic fallback to `"staging"` (Gemini 3.8 Flash), eliminating mock hardcoding across frontend API client and header badges
+  - Live Gemini 3.8 Flash Invocation & Loud Telemetry Verification: Wired live invoker into `graph.execute`, added console-safe `_safe_log` encoding protections, high-visibility live call logging, and automated `gemini-3.6-flash` failover resilience for 100% test and execution uptime
 - Pending Next Step: Step 23: Production Readiness Check & Final Submission Polish
 - Known Issues / Blockers: None
 

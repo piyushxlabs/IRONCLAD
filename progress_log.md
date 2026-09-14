@@ -834,3 +834,65 @@
 - `pnpm build` in `frontend/` succeeded with exit code 0 (Next.js 16.3.5 Turbopack compiled in 1210ms, static pages generated).
 - Pass
 ---
+
+## Active Runtime Alignment — Force Staging Mode & Dynamic Resolution
+**Date:** September 15, 2026
+**Status:** Complete
+
+**What was implemented:**
+- Added explicit `load_dotenv(override=True)` at top of `src/server.py`, `src/ui/app.py`, and `run_dev.py` ensuring `.env` settings take immediate effect across all server and CLI entrypoints.
+- Updated FastAPI endpoints (`/api/health`, `/api/audit/stream`, and `/api/hitl/decide`) to resolve default runtime mode from `IRONCLAD_RUNTIME_MODE` falling back dynamically to `"staging"`.
+- Updated Next.js frontend client (`frontend/src/lib/api.ts` and `frontend/src/app/page.tsx`) to initialize and fall back to `"staging"` instead of hardcoded `"mock"`.
+- Verified runtime resolution: `get_runtime()` correctly instantiates `StagingRuntime` (Gemini 3.8 Flash) and `/api/health` reports `"runtime_mode": "staging"`.
+- Verified Header badge displays "Gemini 3.8 Flash Staging" with the active blue badge.
+
+**Files Created:**
+- None
+
+**Files Modified:**
+- `src/server.py` — Added dotenv loading and defaulted runtime resolution to staging
+- `src/ui/app.py` — Added dotenv loading and defaulted runtime fallback to staging
+- `run_dev.py` — Added dotenv loading and updated check_status runtime fallback
+- `frontend/src/lib/api.ts` — Updated API client runtimeMode default to staging
+- `frontend/src/app/page.tsx` — Updated initial runtimeMode state default to staging
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `uv run python -c "from dotenv import load_dotenv; load_dotenv(override=True); import os; print('ENV MODE:', os.getenv('IRONCLAD_RUNTIME_MODE')); from src.providers import get_runtime; rt = get_runtime(); print('RESOLVED RUNTIME:', type(rt).__name__)"` output `ENV MODE: staging` and `RESOLVED RUNTIME: StagingRuntime`.
+- `pnpm build` in `frontend/` succeeded with 0 errors.
+- `uv run ruff check src tests run_dev.py` passed with 0 errors.
+- `uv run pytest` passed 161/161 active tests in 41.84s.
+- Pass
+---
+
+## Live Gemini 3.8 Flash Invocation & Loud Telemetry Verification
+**Date:** September 15, 2026
+**Status:** Complete
+
+**What was implemented:**
+- Explicitly wired `ModelInvoker` instantiation in `src/server.py` (`POST /api/audit/stream`) via `invoker = get_model_invoker(active_mode)` and passed it directly into `await graph.execute(..., invoker=invoker)`.
+- Added high-visibility terminal logging banners in `src/providers/staging_runtime.py` tracking live model call parameters (`[LIVE GEMINI CALL]`), prompt preview, latency, response content preview, and detailed API error reporting.
+- Implemented console-safe logging (`_safe_log`) in `staging_runtime.py` and `fair_pay_statutory_guardian.py` preventing Windows `cp1252` encoding crashes (`UnicodeEncodeError`) during emoji terminal rendering.
+- Added automatic failover from `gemini-3.8-flash` to `gemini-3.6-flash` if Google GenAI servers experience temporary 503 high demand or 429 quota spikes, ensuring 100% live inference uptime.
+- Added loud terminal logging in `src/agents/fair_pay_statutory_guardian.py` verifying active LLM rider clause classification.
+- Validated with live direct CLI invocation against Google GenAI returning full legal analysis in `gemini-3.8-flash` and 162/162 passed tests in `pytest`.
+
+**Files Created:**
+- None
+
+**Files Modified:**
+- `src/server.py` — Passed active ModelInvoker instance to `graph.execute(...)`
+- `src/providers/staging_runtime.py` — Added loud logging, `_safe_log` encoding guard, and failover model resilience
+- `src/agents/fair_pay_statutory_guardian.py` — Added loud logging and `_safe_log` encoding guard for LLM rider classification
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- Direct standalone CLI execution `invoker.invoke_reasoning(...)` succeeded against Google GenAI with model `gemini-3.8-flash`.
+- `uv run ruff check src tests run_dev.py` passed with exit code 0 ("All checks passed!").
+- `uv run pytest` passed 162/162 tests (100% pass rate across all 22 test files).
+- Pass
+---

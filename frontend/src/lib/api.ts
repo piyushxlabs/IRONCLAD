@@ -24,7 +24,7 @@ export async function fetchHealth(): Promise<any> {
 
 export async function fetchSnapshot(
   checkpointId: string,
-  runtimeMode: string = "mock"
+  runtimeMode: string = "staging"
 ): Promise<IroncladState> {
   const res = await fetch(
     `${API_BASE}/api/snapshot/${encodeURIComponent(checkpointId)}?runtime_mode=${encodeURIComponent(
@@ -63,7 +63,7 @@ export async function submitHitlDecision(params: {
       action: params.action,
       reason: params.reason || null,
       reviewer_id: params.reviewer_id || "executive_reviewer",
-      runtime_mode: params.runtime_mode || "mock",
+      runtime_mode: params.runtime_mode || "staging",
       modified_inputs: null, // Guaranteed null per financial immutability mandate
     }),
   });
@@ -93,7 +93,7 @@ export async function streamAudit(
     },
     body: JSON.stringify({
       scenario: payload.scenario,
-      runtime_mode: payload.runtime_mode || "mock",
+      runtime_mode: payload.runtime_mode || "staging",
       session_id: payload.session_id,
       draw_packet_meta: payload.draw_packet_meta,
     }),

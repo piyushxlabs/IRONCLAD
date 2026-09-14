@@ -14,6 +14,7 @@ import os
 import tempfile
 
 import streamlit as st
+from dotenv import load_dotenv
 
 from src.agents.graph import build_ironclad_graph
 from src.state.checkpointing import get_checkpoint_manager
@@ -31,6 +32,8 @@ from src.ui.generative_ui import (
 )
 from src.ui.hitl_resumption import submit_decision
 from src.ui.stream_consumer import StreamConsumer, UIStateAccumulator
+
+load_dotenv(override=True)
 
 st.set_page_config(
     page_title="IRONCLAD — Retainage & Lien Sentinel",
@@ -106,7 +109,7 @@ def main() -> None:
 
     # Sidebar: Scenario Selection & Execution Controls
     st.sidebar.markdown("### ⚙️ Audit Controls")
-    runtime_mode = os.getenv("IRONCLAD_RUNTIME_MODE", "mock").lower()
+    runtime_mode = os.getenv("IRONCLAD_RUNTIME_MODE", "staging").lower()
     st.sidebar.caption(f"Active Runtime: **{runtime_mode.upper()}**")
 
     scenario_options = [

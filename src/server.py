@@ -22,6 +22,7 @@ from typing import Any
 
 import fastapi
 import pydantic
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -29,6 +30,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from src.agents.graph import build_ironclad_graph
 from src.errors import ApprovalTimeoutError, StateValidationError
+from src.models import get_model_invoker
 from src.state.checkpointing import get_checkpoint_manager
 from src.state.schema import (
     ApprovalStatus,
@@ -46,6 +48,8 @@ from src.ui.event_types import (
     format_sse_event,
 )
 from src.ui.hitl_resumption import submit_decision
+
+load_dotenv(override=True)
 
 app = FastAPI(
     title="IRONCLAD Sentinel API Bridge",
@@ -91,7 +95,7 @@ class AuditStreamRequest(BaseModel):
         description="Explicit draw packet envelope metadata",
     )
     runtime_mode: str | None = Field(
-        default=None,
+        default_factory=lambda: os.getenv("IRONCLAD_RUNTIME_MODE", "staging"),
         description="Runtime mode override ('mock', 'staging', 'bedrock')",
     )
     session_id: str | None = Field(
@@ -122,7 +126,7 @@ class HitlDecisionRequest(BaseModel):
         description="Authenticated reviewer identity",
     )
     runtime_mode: str | None = Field(
-        default=None,
+        default_factory=lambda: os.getenv("IRONCLAD_RUNTIME_MODE", "staging"),
         description="Runtime mode for checkpoint manager lookup",
     )
     modified_inputs: dict[str, Any] | None = Field(
@@ -137,7 +141,7 @@ async def get_health() -> dict[str, Any]:
     return {
         "status": "Healthy",
         "service": "ironclad-sentinel-fastapi",
-        "runtime_mode": os.getenv("IRONCLAD_RUNTIME_MODE", "mock"),
+        "runtime_mode": os.getenv("IRONCLAD_RUNTIME_MODE", "staging"),
         "version": "0.1.0",
         "fastapi_version": fastapi.__version__,
         "pydantic_version": pydantic.__version__,
@@ -151,7 +155,8 @@ async def stream_audit(request: AuditStreamRequest) -> StreamingResponse:
     Ingests preset scenario keys or custom DrawPacketMeta, initializes IroncladState,
     and returns a non-blocking SSE stream conforming to INTERFACE_OBSERVABILITY_SYSTEM.md.
     """
-    active_mode = (request.runtime_mode or os.getenv("IRONCLAD_RUNTIME_MODE", "mock")).lower()
+    active_mode = (request.runtime_mode or os.getenv("IRONCLAD_RUNTIME_MODE", "staging")).lower()
+    invoker = get_model_invoker(active_mode)
 
     # Resolve input state from preset or explicit payload
     initial_state: IroncladState
@@ -202,6 +207,7 @@ async def stream_audit(request: AuditStreamRequest) -> StreamingResponse:
                 initial_state=initial_state,
                 checkpoint_manager=checkpoint_manager,
                 session_id=session_id,
+                invoker=invoker,
             )
 
             # Progressive state snapshot updates
