@@ -15,13 +15,15 @@ Adheres strictly to:
 """
 
 import asyncio
+import uuid
 from collections.abc import Callable
 from typing import Any
-import uuid
 
 from pydantic import BaseModel, Field
 
-from src.agents.everyday_decision_card_emitter import everyday_decision_card_emitter_node
+from src.agents.everyday_decision_card_emitter import (
+    everyday_decision_card_emitter_node,
+)
 from src.agents.fair_pay_statutory_guardian import fair_pay_statutory_guardian_node
 from src.agents.forensic_audit_sentinel import forensic_audit_sentinel_node
 from src.errors import StateValidationError
@@ -37,7 +39,6 @@ from src.state.reducers import (
 )
 from src.state.schema import (
     ApprovalDecision,
-    ApprovalStatus,
     ErrorRecord,
     IroncladState,
 )

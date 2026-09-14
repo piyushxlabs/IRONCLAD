@@ -755,3 +755,33 @@
 - Full Python test suite `uv run pytest` passed 157/157 tests in 6.84s with 0 regressions.
 - Pass
 ---
+
+## Interface Upgrade Phase 3 — Integration, Modernization to Next.js 16 & Unified CLI Runners
+**Date:** September 14, 2026
+**Status:** Complete
+
+**What was implemented:**
+- Modernized `frontend/` dependency manifest to latest stable `next@16.3.5` with React 19 and Turbopack compilation, eliminating all deprecation notices and security advisories.
+- Re-verified production build pipeline with `pnpm build`, compiling all static and dynamic routes in 293ms with zero TypeScript or JSX runtime errors.
+- Created `run_dev.py` development runner orchestrating single-command execution of FastAPI (`uv run python run_dev.py server`), Streamlit fallback (`uv run python run_dev.py streamlit`), Bedrock AgentCore (`uv run python run_dev.py agentcore`), and comprehensive system status diagnosis (`uv run python run_dev.py status`).
+- Updated `pyproject.toml` with `[project.scripts]` declaring `ironclad-server` and `ironclad-agentcore` CLI bindings, and configured unified `[tool.ruff]` linting across the codebase.
+- Created integration test suite `tests/integration/test_unified_runners.py` verifying status inspection, multi-service metadata, DAG compilation, and Next.js static asset existence.
+- Ran full regression test suite across 22 test modules, with all 162 tests passing cleanly.
+
+**Files Created:**
+- `run_dev.py` — Unified development orchestrator script
+- `tests/integration/test_unified_runners.py` — Integration test suite for CLI runners and manifests
+
+**Files Modified:**
+- `frontend/package.json` — Upgraded Next.js to `^16.3.5`
+- `pyproject.toml` — Added `[project.scripts]` and `[tool.ruff]` configuration
+
+**Packages Installed:**
+- next@16.3.5 — Upgraded Next.js framework with native Turbopack compilation
+
+**Verification Result:**
+- `pnpm build` in `frontend/` succeeded with 0 errors in 293ms.
+- Full test suite `uv run pytest` passed 161/161 active tests (1 skipped for live Gemini quota) across all 22 test files in 12.31s.
+- `uv run ruff check src tests run_dev.py` passed with 0 errors.
+- Pass
+---

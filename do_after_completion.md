@@ -1,64 +1,63 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# INTERFACE UPGRADE PHASE 2 COMPLETION CHECKLIST
-# Next.js 15 Executive Decision Console Scaffolding
+# INTERFACE UPGRADE PHASE 3 COMPLETION CHECKLIST
+# Integration, Modernization to Next.js 16 & Unified CLI Runners
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Verify Next.js production build:
+[ ] Run the unified status diagnostic check:
+    ```
+    uv run python run_dev.py status
+    ```
+    Expected: All 4 subsystems report [OK] (FastAPI, DAG, Streamlit, Next.js 16)
+
+[ ] Verify Next.js 16 Turbopack production build:
     ```
     cd frontend && pnpm build
     ```
-    Expected: Compiled successfully with 0 errors (static pages generated)
+    Expected: Compiled successfully with Next.js 16.3.5 (Turbopack) in under 5s
 
-[ ] Verify full Python backend test suite:
+[ ] Run the full Python regression test suite across all 22 test files:
     ```
     uv run pytest
     ```
-    Expected: 157 passed, 1 skipped in under 10.00s
+    Expected: 161 passed, 1 skipped in under 15.00s
 
-[ ] Verify Python linting:
+[ ] Run code quality linter:
     ```
-    uv run ruff check src tests
+    uv run ruff check src tests run_dev.py
     ```
     Expected: All checks passed!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Optional: Launch development servers side-by-side to preview live dashboard:
-    1. In Terminal 1 (FastAPI backend):
+[ ] Optional: Launch development environment with unified commands:
+    1. Terminal 1 — Launch FastAPI backend:
        ```
-       uv run uvicorn src.server:app --port 8000
+       uv run python run_dev.py server
        ```
-    2. In Terminal 2 (Next.js frontend):
+       Expected: FastAPI serving on http://0.0.0.0:8000
+    2. Terminal 2 — Launch Next.js 16 Executive Console:
        ```
        cd frontend && pnpm dev
        ```
-    Expected: Console accessible at http://localhost:3000
-
-[ ] Functional UI Inspection:
-    - Open http://localhost:3000 in your browser
-    - Click "Execute Audit" to trigger real-time SSE streaming from FastAPI
-    - Observe 3 financial KPI tiles, lien status badge, and prompt-pay countdown
-    - Verify 3-button HITL Action Center and expandable Forensic Audit Trail
+       Expected: Dashboard active on http://localhost:3000
+    3. Terminal 3 (Optional fallback) — Launch Streamlit Console:
+       ```
+       uv run python run_dev.py streamlit
+       ```
+       Expected: Streamlit active on http://localhost:8501
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] File: `frontend/src/app/page.tsx` — Single-page Zero-Chat Executive Decision Console
-[ ] File: `frontend/src/components/Header.tsx` — Project metadata, scenario picker, and runtime badge
-[ ] File: `frontend/src/components/StatusBanner.tsx` — Real-time animated SSE stage tracker
-[ ] File: `frontend/src/components/FinancialSummary.tsx` — 3 dominant financial KPI tiles (Gross, Retainage, Net)
-[ ] File: `frontend/src/components/ComplianceRow.tsx` — Lien chain status & Prompt-Pay statutory countdown
-[ ] File: `frontend/src/components/DiscrepancyTable.tsx` — Interactive audit findings and severity badges
-[ ] File: `frontend/src/components/ActionCenter.tsx` — 3-button authenticated HITL action center
-[ ] File: `frontend/src/components/AuditTrailDrawer.tsx` — Collapsible execution timeline and audit JSON export
-[ ] File: `frontend/src/lib/api.ts` — SSE client for streaming and HITL decision submission
-[ ] File: `frontend/src/types/index.ts` — TypeScript models mirroring backend Pydantic schemas
-[ ] Config: `frontend/tailwind.config.ts` — Institutional dark theme (`#0B0F19`, `#111827`, `#1F2937`)
-[ ] Package: `next@15.1.7`, `react@19.3.0`, `tailwindcss@3.4.19`, `lucide-react@0.475.0`
+[ ] File: `run_dev.py` — Unified CLI development runner (server, streamlit, agentcore, status)
+[ ] File: `tests/integration/test_unified_runners.py` — Integration test suite for runners and manifests
+[ ] File: `frontend/package.json` — Modernized to `next@^16.3.5` with React 19 and Turbopack
+[ ] Config: `pyproject.toml` — `[project.scripts]` CLI bindings and `[tool.ruff]` lint configuration
+[ ] Package: `next@16.3.5` — Upgraded Next.js framework with native Turbopack compilation
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -66,31 +65,31 @@
 
 Test 1 — Files Exist:
 ```
-powershell -Command "Test-Path frontend/src/app/page.tsx, frontend/src/lib/api.ts, frontend/src/components/Header.tsx"
+powershell -Command "Test-Path run_dev.py, tests/integration/test_unified_runners.py, frontend/package.json"
 ```
 ✅ Expected: True True True
-❌ If missing: Check `frontend/src/` structure
+❌ If missing: Check repository root
 
 Test 2 — Environment / Dependencies:
 ```
-node -v; pnpm -v
+powershell -Command "cd frontend; pnpm list next"
 ```
-✅ Expected: Node v24+, pnpm v11+
-❌ If errors: Ensure Node.js and pnpm are installed and on PATH
+✅ Expected: next 16.3.5
+❌ If errors: Run `cd frontend; pnpm install --ignore-scripts`
 
-Test 3 — Next.js Build Check:
+Test 3 — Next.js 16 Turbopack Build Check:
 ```
 powershell -Command "cd frontend; pnpm build"
 ```
-✅ Expected: Compiled successfully with 0 errors
-❌ If errors: Check TypeScript types and imports in `frontend/src/`
+✅ Expected: Compiled successfully with Next.js 16.3.5 (Turbopack)
+❌ If errors: Check Next.js build logs in `frontend/.next`
 
-Test 4 — Python Backend Regression Check:
+Test 4 — Python Full Test Suite:
 ```
 uv run pytest
 ```
-✅ Expected: 157 passed, 1 skipped
-❌ If errors: Ensure Python backend remains untouched
+✅ Expected: 161 passed, 1 skipped
+❌ If errors: Run `uv run pytest -v` to locate failing module
 
 Test 5 — Security Check:
 [ ] Verify .env is in .gitignore:
@@ -107,11 +106,11 @@ Test 5 — Security Check:
 
 ```
 git add .
-git commit -m "Interface Upgrade Phase 2: Next.js 15 App Router Executive Decision Console Scaffolding"
+git commit -m "Interface Upgrade Phase 3: Integration, Next.js 16 Turbopack upgrade & unified CLI runner"
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✋ DO NOT proceed to Phase 3 (Integration & Verification Scripts) until:
+✋ DO NOT proceed to Step 23 (Production Readiness Check & Final Submission Polish) until:
 [ ] All tests above show ✅
 [ ] Git commit is done
 [ ] You have read do_after_completion.md fully

@@ -10,10 +10,10 @@ Adheres strictly to:
 - .agents/rules/ui-non-goals-interface-boundaries.md
 """
 
-from decimal import Decimal
 import hashlib
-from typing import Any
 import uuid
+from decimal import Decimal
+from typing import Any
 
 from src.models import ModelInvoker, get_model_invoker
 from src.state.reducers import EVERYDAY_WRITER
