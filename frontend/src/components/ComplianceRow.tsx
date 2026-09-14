@@ -50,6 +50,13 @@ export const ComplianceRow: React.FC<ComplianceRowProps> = ({
   const lien = getLienBadge();
   const daysRemaining = statutoryClock?.days_remaining ?? 0;
   const isCritical = statutoryClock?.critical_alert_threshold ?? (daysRemaining <= 2);
+  const jurisdiction = statutoryClock?.state || statutoryClock?.state_jurisdiction || "Texas Commercial";
+  const deadline = statutoryClock?.statutory_deadline_date 
+    || (statutoryClock?.deadline_timestamp ? statutoryClock.deadline_timestamp.split("T")[0] : "—");
+  
+  const penaltyRateFormatted = statutoryClock?.penalty_interest_rate != null
+    ? `${(Number(statutoryClock.penalty_interest_rate) * 100).toFixed(2)}% / mo`
+    : (statutoryClock?.monthly_penalty_rate_pct ? `${statutoryClock.monthly_penalty_rate_pct}% / mo` : "1.50% / mo");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
@@ -118,7 +125,7 @@ export const ComplianceRow: React.FC<ComplianceRowProps> = ({
               <p className="text-xs text-gray-400 mt-1">
                 Deadline:{" "}
                 <span className="text-gray-200 font-mono">
-                  {statutoryClock?.statutory_deadline_date || "—"}
+                  {deadline}
                 </span>
               </p>
             </div>
@@ -128,14 +135,14 @@ export const ComplianceRow: React.FC<ComplianceRowProps> = ({
                 Statutory Interest Penalty
               </span>
               <span className="text-sm font-bold font-mono text-amber-400">
-                {statutoryClock?.monthly_penalty_rate_pct ? `${statutoryClock.monthly_penalty_rate_pct}% / mo` : "1.50% / mo"}
+                {penaltyRateFormatted}
               </span>
             </div>
           </div>
         </div>
 
         <div className="mt-4 pt-3 border-t border-[#1F2937] flex items-center justify-between text-[11px] text-gray-500 font-mono">
-          <span>Jurisdiction: {statutoryClock?.state_jurisdiction || "Texas Commercial"}</span>
+          <span>Jurisdiction: {jurisdiction}</span>
           <span>Clause: {statutoryClock?.clause_classification || "pay-when-paid"}</span>
         </div>
       </div>

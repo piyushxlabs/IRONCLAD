@@ -5,7 +5,7 @@ Sends the finalized zero-chat decision card or urgent statutory escalation alert
 """
 
 import asyncio
-from typing import Literal
+from typing import Any, Literal
 
 from strands import tool
 
@@ -23,6 +23,7 @@ async def dispatch_decision_notification(
     project_id: str,
     draw_number: int,
     recipients: list[Literal["GENERAL_CONTRACTOR", "OWNER", "SUBCONTRACTOR"] | str],
+    summary: str | None = None,
 ) -> DispatchDecisionNotificationOutput:
     """Send finalized decision card or urgent prompt-pay statutory alert to GC, Owner, and Subcontractor."""
     valid_types = {"DECISION_CARD_READY", "URGENT_STATUTORY_ESCALATION"}
@@ -47,19 +48,24 @@ async def dispatch_decision_notification(
         project_id=project_id,
         draw_number=draw_number,
         recipients=recipients,  # type: ignore[arg-type]
+        summary=summary,
     )
 
     runtime = get_runtime()
-    payload = {
+    payload: dict[str, Any] = {
         "notification_type": notification_type,
         "project_id": project_id,
         "draw_number": draw_number,
         "recipients": list(recipients),
     }
+    if summary is not None:
+        payload["summary"] = summary
 
     # Transient error handling with exponential backoff (1s -> 4s -> 16s)
     backoff_delays = [1.0, 4.0, 16.0]
     last_error: Exception | None = None
+
+    import os
 
     for attempt, delay in enumerate(backoff_delays, start=1):
         try:
@@ -71,7 +77,8 @@ async def dispatch_decision_notification(
         except (IroncladError, RuntimeError, KeyError, ValueError, OSError, TypeError) as e:
             last_error = e
             if attempt < len(backoff_delays):
-                await asyncio.sleep(0.01)  # Non-blocking pause for testing / backoff simulation
+                sleep_time = 0.01 if os.getenv("PYTEST_CURRENT_TEST") else delay
+                await asyncio.sleep(sleep_time)
             continue
 
     raise ToolExecutionError(

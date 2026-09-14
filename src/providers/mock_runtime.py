@@ -36,6 +36,12 @@ class MockRuntime(BaseRuntimeProtocol):
         if structured_output_schema is not None:
             # Return a default-constructed or mock-populated instance
             schema_name = structured_output_schema.__name__
+            if schema_name == "RiderClauseClassification" and any(k in prompt.lower() for k in ("ambiguous", "edge")):
+                return structured_output_schema.model_validate({
+                    "contract_clause": None,
+                    "confidence": 0.45,
+                    "ambiguous": True,
+                })
             mock_data = self._get_mock_structured_output(schema_name)
             if mock_data is not None:
                 return structured_output_schema.model_validate(mock_data)
@@ -48,37 +54,37 @@ class MockRuntime(BaseRuntimeProtocol):
         return f"[MOCK_RESPONSE from {model_id}]: Processed input successfully."
 
     def _get_mock_structured_output(self, schema_name: str) -> dict[str, Any] | None:
-        """Resolve mock structured output fixtures."""
+        """Resolve mock structured output fixtures matching strict Pydantic schemas."""
         fixtures = {
             "LineItemMappingAndDiscrepancy": {
-                "mapped_items": [
+                "normalized_line_items": [
                     {
                         "line_item_id": "LI-001",
                         "description": "Concrete foundation pour",
-                        "contract_retainage_pct": 0.05,
-                        "current_billed": 12000.00,
-                        "stored_materials": 0.00,
-                        "prior_payments": 36000.00,
+                        "contract_retainage_pct": "0.05",
+                        "current_billed": "12000.00",
+                        "stored_materials": "0.00",
+                        "prior_payments": "36000.00",
                     }
                 ],
-                "confidence_score": 0.98,
-                "extraction_notes": "All figures match G703 continuation sheet clearly.",
+                "new_discrepancies": [],
+                "confidence": 0.98,
             },
             "RiderClauseClassification": {
-                "detected_clause_type": "pay-if-paid",
-                "confidence_score": 0.95,
-                "clause_text_excerpt": "Payment by Owner to Contractor shall be an express condition precedent...",
-                "statutory_override_risk": "MEDIUM",
+                "contract_clause": "pay-if-paid",
+                "confidence": 0.95,
+                "ambiguous": False,
             },
             "DecisionCardPayload": {
                 "draw_number": 4,
                 "project_name": "Skyline Tower Phase II",
                 "subcontractor_trade": "Cast-in-Place Concrete",
-                "gross_amount_requested": 12000.00,
-                "contractual_retainage_withheld": 600.00,
-                "net_recommended_release": 11400.00,
+                "gross_amount_requested": "12000.00",
+                "contractual_retainage_withheld": "600.00",
+                "net_recommended_release": "11400.00",
                 "lien_chain_status": "VALID",
                 "statutory_prompt_pay_clock": {
+                    "state": "TX",
                     "days_remaining": 21,
                     "deadline_timestamp": "2026-10-04T00:00:00Z",
                     "penalty_interest_rate": "0.015",
@@ -86,6 +92,7 @@ class MockRuntime(BaseRuntimeProtocol):
                 },
                 "recommended_action": "APPROVE_RELEASE",
                 "blocking_discrepancies": [],
+                "confidence_score": 1.0,
             },
         }
         return fixtures.get(schema_name)

@@ -25,11 +25,11 @@ def test_model_catalog_resolution() -> None:
     # Bedrock
     assert (
         invoker.resolve_model_id(ModelRole.PRIMARY_REASONING, runtime_mode="bedrock")
-        == "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        == "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
     )
     assert (
         invoker.resolve_model_id(ModelRole.SECONDARY_EXECUTION, runtime_mode="bedrock")
-        == "anthropic.claude-3-5-haiku-20241022-v1:0"
+        == "us.anthropic.claude-3-5-haiku-20241022-v1:0"
     )
 
     # Staging

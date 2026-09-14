@@ -202,6 +202,7 @@ class DispatchDecisionNotificationInput(BaseModel):
     recipients: list[Literal["GENERAL_CONTRACTOR", "OWNER", "SUBCONTRACTOR"]] = Field(
         ..., min_length=1, description="Stakeholder recipient roles"
     )
+    summary: str | None = Field(default=None, description="Executive narrative summary")
 
 
 class DispatchDecisionNotificationOutput(BaseModel):

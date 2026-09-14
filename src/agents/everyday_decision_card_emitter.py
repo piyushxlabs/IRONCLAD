@@ -158,6 +158,23 @@ async def everyday_decision_card_emitter_node(
         confidence_score=1.0 if not state.flagged_discrepancies else 0.85,
     )
 
+    # Attach secondary model execution synthesis trace if invoker is available
+    if invoker is not None and call_count < MAX_NODE_CALLS:
+        try:
+            call_count += 1
+            card_prompt = (
+                f"Synthesize the executive compliance summary for project '{state.draw_packet_meta.project_id}' "
+                f"Draw #{state.draw_packet_meta.draw_number}. "
+                f"Recommended Action: {recommended_action}, Net Recommended Release: ${net_release:,.2f}."
+            )
+            await invoker.invoke_execution(
+                prompt=card_prompt,
+                system_prompt=EVERYDAY_DECISION_CARD_EMITTER_SYSTEM_PROMPT,
+            )
+        except Exception:
+            # Non-blocking telemetry execution trace
+            pass
+
     # 5. Dispatch Decision Notification (Notification MCP)
     if dispatch_alert and call_count < MAX_NODE_CALLS:
         sig = hashlib.sha256(

@@ -142,17 +142,31 @@ export const AuditTrailDrawer: React.FC<AuditTrailDrawerProps> = ({ state, audit
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1F2937]">
-                  {lineItems.map((item, idx) => (
-                    <tr key={item.line_item_id || idx} className="hover:bg-[#111827]/40">
-                      <td className="px-4 py-2 text-blue-400">{item.line_item_id}</td>
-                      <td className="px-4 py-2 font-sans">{item.description}</td>
-                      <td className="px-4 py-2 text-right">${Number(item.scheduled_value).toLocaleString()}</td>
-                      <td className="px-4 py-2 text-right">${Number(item.work_completed_this_period).toLocaleString()}</td>
-                      <td className="px-4 py-2 text-right">${Number(item.stored_materials).toLocaleString()}</td>
-                      <td className="px-4 py-2 text-right">{(Number(item.retainage_rate) * 100).toFixed(0)}%</td>
-                      <td className="px-4 py-2 text-right text-amber-300">${Number(item.retainage_amount).toLocaleString()}</td>
-                    </tr>
-                  ))}
+                  {lineItems.map((item, idx) => {
+                    const scheduled = item.scheduled_value != null ? Number(item.scheduled_value) : null;
+                    const billed = (item.current_billed != null ? Number(item.current_billed) : null)
+                      ?? (item.work_completed_this_period != null ? Number(item.work_completed_this_period) : null);
+                    const stored = item.stored_materials != null ? Number(item.stored_materials) : null;
+                    const rate = (item.contract_retainage_pct != null ? Number(item.contract_retainage_pct) : null)
+                      ?? (item.retainage_rate != null ? Number(item.retainage_rate) : null);
+                    const retainage = (item.retainage_amount != null ? Number(item.retainage_amount) : null)
+                      ?? (billed != null && rate != null ? (billed + (stored || 0)) * rate : null);
+
+                    const fmt = (v: number | null) => (v != null && !isNaN(v) ? `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—");
+                    const fmtPct = (v: number | null) => (v != null && !isNaN(v) ? `${(v * 100).toFixed(0)}%` : "—");
+
+                    return (
+                      <tr key={item.line_item_id || idx} className="hover:bg-[#111827]/40">
+                        <td className="px-4 py-2 text-blue-400">{item.line_item_id}</td>
+                        <td className="px-4 py-2 font-sans">{item.description}</td>
+                        <td className="px-4 py-2 text-right">{fmt(scheduled)}</td>
+                        <td className="px-4 py-2 text-right">{fmt(billed)}</td>
+                        <td className="px-4 py-2 text-right">{fmt(stored)}</td>
+                        <td className="px-4 py-2 text-right">{fmtPct(rate)}</td>
+                        <td className="px-4 py-2 text-right text-amber-300">{fmt(retainage)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

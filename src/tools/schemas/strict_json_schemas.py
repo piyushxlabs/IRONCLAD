@@ -161,6 +161,10 @@ DISPATCH_DECISION_NOTIFICATION_SCHEMA: dict[str, Any] = {
                 },
                 "minItems": 1,
             },
+            "summary": {
+                "type": ["string", "null"],
+                "description": "Optional executive narrative summary of audit outcome",
+            },
         },
         "required": ["notification_type", "project_id", "draw_number", "recipients"],
         "additionalProperties": False,

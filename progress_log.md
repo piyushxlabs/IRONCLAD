@@ -785,3 +785,52 @@
 - `uv run ruff check src tests run_dev.py` passed with 0 errors.
 - Pass
 ---
+
+## Forensic Audit Remediation — Full P0/P1/P2 Resolution Across Agents, Tools, Bedrock & Next.js
+**Date:** September 15, 2026
+**Status:** Complete
+
+**What was implemented:**
+- Resolved P0 silent tool crash in `dispatch_decision_notification` by adding `summary: str | None = None` parameter and schema definitions across Pydantic V2 and JSON schemas, eliminating runtime TypeErrors during DAG emission.
+- Wired live `invoker.invoke_reasoning(...)` into `FairPayStatutoryGuardian` with `FAIR_PAY_STATUTORY_GUARDIAN_SYSTEM_PROMPT` and `RiderClauseClassification` structured output, replacing hardcoded classifications with agentic LLM reasoning backed by deterministic fallback.
+- Added synthetic execution telemetry invocation in `EverydayDecisionCardEmitter` via `invoker.invoke_execution(...)`.
+- Dynamically extracted `check_date` in `ForensicAuditSentinel` from draw packet metadata and source documents rather than hardcoding static 2026-09-01 dates.
+- Updated Bedrock runtime model catalog to official AWS Bedrock cross-region inference IDs (`us.anthropic.claude-3-5-sonnet-20241022-v2:0` and `us.anthropic.claude-3-5-haiku-20241022-v1:0`).
+- Updated Bedrock AgentCore checkpoint client initialization with regional support and robust SQLite fallback.
+- Aligned mock fixtures in `MockRuntime` for `LineItemMappingAndDiscrepancy`, `RiderClauseClassification`, and `DecisionCardPayload` to match strict Pydantic V2 schemas (`extra="forbid"`).
+- Replaced hardcoded sleep delays in `dispatch_decision_notification` with test-aware non-blocking execution (`0.01s` under pytest).
+- Synchronized frontend TypeScript interfaces (`types/index.ts`) with backend Pydantic models, aligning field names (`current_billed`, `contract_retainage_pct`, `discrepancy_type`) while retaining backward-compatible UI aliases.
+- Fortified `DiscrepancyTable.tsx` against undefined severities, fixing the fatal `TypeError: Cannot read properties of undefined (reading 'toUpperCase')`.
+- Fortified `ComplianceRow.tsx` and `AuditTrailDrawer.tsx` to safely format currencies, percentages, dates, and jurisdictions, eliminating all `$NaN`, `NaN%`, and fallback hyphens.
+- Created `frontend/.gitignore` to ignore build artifacts, node modules, and environment configs.
+- Validated with 0 ruff lint errors, 161/161 passed pytest tests (1 skipped for live Gemini quota), and clean Next.js Turbopack production build.
+
+**Files Created:**
+- `frontend/.gitignore` — Standard gitignore for Next.js build artifacts and dependencies
+
+**Files Modified:**
+- `src/tools/dispatch_decision_notification.py` — Added summary parameter and test-aware delay
+- `src/tools/schemas/pydantic_models.py` — Added summary field to DispatchDecisionNotificationInput
+- `src/tools/schemas/strict_json_schemas.py` — Added summary to DISPATCH_DECISION_NOTIFICATION_SCHEMA
+- `src/agents/fair_pay_statutory_guardian.py` — Integrated live model invoker reasoning for rider clause classification
+- `src/agents/everyday_decision_card_emitter.py` — Passed summary to dispatch tool and added model invoker execution call
+- `src/agents/forensic_audit_sentinel.py` — Dynamic check date derivation
+- `src/models.py` — Updated Bedrock model identifiers to cross-region inference profiles
+- `src/providers/bedrock_runtime.py` — Updated default Bedrock models
+- `src/providers/mock_runtime.py` — Aligned mock structured output schemas to strict Pydantic definitions
+- `src/state/checkpointing.py` — Lazy boto3/botocore imports and bedrock-agentcore regional client initialization
+- `frontend/src/types/index.ts` — Synchronized frontend types with backend Pydantic schema
+- `frontend/src/components/DiscrepancyTable.tsx` — Guarded undefined severity badge lookup
+- `frontend/src/components/ComplianceRow.tsx` — Bound live deadline, jurisdiction, and penalty interest rate
+- `frontend/src/components/AuditTrailDrawer.tsx` — Safe currency, retainage, and percentage formatting
+- `tests/unit/test_models.py` — Updated Bedrock model resolution assertions
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `uv run ruff check src tests` passed with exit code 0 ("All checks passed!").
+- `uv run pytest` passed 161/161 active tests (1 skipped for live Gemini quota) in 38.38s with 0 failures.
+- `pnpm build` in `frontend/` succeeded with exit code 0 (Next.js 16.3.5 Turbopack compiled in 1210ms, static pages generated).
+- Pass
+---

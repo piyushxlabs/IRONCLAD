@@ -21,7 +21,8 @@ export const DiscrepancyTable: React.FC<DiscrepancyTableProps> = ({ discrepancie
     }).format(num);
   };
 
-  const getSeverityBadge = (severity: string) => {
+  const getSeverityBadge = (severity?: string) => {
+    if (!severity) return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     switch (severity.toUpperCase()) {
       case "CRITICAL":
         return "bg-red-500/15 text-red-400 border-red-500/30";
@@ -84,39 +85,43 @@ export const DiscrepancyTable: React.FC<DiscrepancyTableProps> = ({ discrepancie
             </tr>
           </thead>
           <tbody className="divide-y divide-[#1F2937]/70 font-mono">
-            {discrepancies.map((d, index) => (
-              <tr key={d.discrepancy_id || index} className="hover:bg-[#1F2937]/30 transition-colors">
-                <td className="px-6 py-3.5 text-blue-400 font-semibold whitespace-nowrap">
-                  {d.line_item_id || "DRAW_ENVELOPE"}
-                </td>
-                <td className="px-6 py-3.5 text-gray-200 whitespace-nowrap">
-                  <div className="flex items-center gap-1.5">
-                    <AlertOctagon className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                    <span>{d.type}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-3.5 text-gray-300 font-sans max-w-md">
-                  <p className="leading-snug">{d.description}</p>
-                  {d.citation_source && (
-                    <span className="text-[10px] text-gray-500 font-mono block mt-1">
-                      Ref: {d.citation_source}
+            {discrepancies.map((d, index) => {
+              const dispType = d.discrepancy_type || d.type || "COMPLIANCE_DEFECT";
+              const dispSeverity = d.severity || (dispType.includes("PRE_DATED") ? "CRITICAL" : "HIGH");
+              return (
+                <tr key={d.discrepancy_id || `${d.line_item_id}-${index}`} className="hover:bg-[#1F2937]/30 transition-colors">
+                  <td className="px-6 py-3.5 text-blue-400 font-semibold whitespace-nowrap">
+                    {d.line_item_id || "DRAW_ENVELOPE"}
+                  </td>
+                  <td className="px-6 py-3.5 text-gray-200 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5">
+                      <AlertOctagon className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                      <span>{dispType}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3.5 text-gray-300 font-sans max-w-md">
+                    <p className="leading-snug">{d.description}</p>
+                    {d.citation_source && (
+                      <span className="text-[10px] text-gray-500 font-mono block mt-1">
+                        Ref: {d.citation_source}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-3.5 text-right font-semibold text-amber-300 whitespace-nowrap">
+                    {formatCurrency(d.variance_amount)}
+                  </td>
+                  <td className="px-6 py-3.5 text-center whitespace-nowrap">
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded border font-semibold uppercase ${getSeverityBadge(
+                        dispSeverity
+                      )}`}
+                    >
+                      {dispSeverity}
                     </span>
-                  )}
-                </td>
-                <td className="px-6 py-3.5 text-right font-semibold text-amber-300 whitespace-nowrap">
-                  {formatCurrency(d.variance_amount)}
-                </td>
-                <td className="px-6 py-3.5 text-center whitespace-nowrap">
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded border font-semibold uppercase ${getSeverityBadge(
-                      d.severity
-                    )}`}
-                  >
-                    {d.severity}
-                  </span>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

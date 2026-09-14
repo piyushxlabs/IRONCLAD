@@ -406,8 +406,10 @@ class AgentCoreMemorySessionManager(BaseCheckpointManager):
         if self._client is None:
             try:
                 import boto3
+                from botocore.exceptions import BotoCoreError, ClientError
 
-                self._client = boto3.client("bedrock-agentcore-runtime")
+                region = os.getenv("AWS_REGION", "us-east-1")
+                self._client = boto3.client("bedrock-agentcore", region_name=region)
             except (
                 ImportError,
                 AttributeError,
@@ -417,6 +419,7 @@ class AgentCoreMemorySessionManager(BaseCheckpointManager):
                 OSError,
                 BotoCoreError,
                 ClientError,
+                Exception,
             ):
                 self._client = None
         return self._client

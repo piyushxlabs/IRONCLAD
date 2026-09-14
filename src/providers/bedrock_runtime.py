@@ -22,8 +22,8 @@ class BedrockRuntime(BaseRuntimeProtocol):
         self,
         region_name: str | None = None,
         profile_name: str | None = None,
-        default_reasoning_model: str = "anthropic.claude-3-5-sonnet-20241022-v2:0",
-        default_execution_model: str = "anthropic.claude-3-5-haiku-20241022-v1:0",
+        default_reasoning_model: str = "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+        default_execution_model: str = "us.anthropic.claude-3-5-haiku-20241022-v1:0",
     ) -> None:
         self.region_name = region_name or os.getenv("AWS_REGION", "us-east-1")
         self.profile_name = profile_name or os.getenv("AWS_PROFILE")

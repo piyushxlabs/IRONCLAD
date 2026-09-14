@@ -325,7 +325,15 @@ async def forensic_audit_sentinel_node(
 
     # 5. Deterministic Lien Waiver Chain-of-Custody Verification
     if raw_waivers_data and call_count < MAX_NODE_CALLS:
-        check_date_str = "2026-09-01"
+        # Resolve check date dynamically from envelope, waiver metadata, or period baseline
+        check_date_str = getattr(state.draw_packet_meta, "check_date", None)
+        if not check_date_str:
+            for w in raw_waivers_data:
+                if isinstance(w, dict) and w.get("check_date"):
+                    check_date_str = str(w["check_date"])
+                    break
+        if not check_date_str:
+            check_date_str = "2026-09-01"
 
         sig = hashlib.sha256(f"lien:{len(raw_waivers_data)}:{check_date_str}".encode()).hexdigest()
 

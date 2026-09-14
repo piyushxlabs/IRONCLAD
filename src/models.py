@@ -28,8 +28,8 @@ class ModelCatalog(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     # Production AWS Bedrock model IDs
-    bedrock_primary: str = "anthropic.claude-3-5-sonnet-20241022-v2:0"
-    bedrock_secondary: str = "anthropic.claude-3-5-haiku-20241022-v1:0"
+    bedrock_primary: str = "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+    bedrock_secondary: str = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
 
     # Staging Google GenAI model IDs
     staging_primary: str = "gemini-3.8-flash"
