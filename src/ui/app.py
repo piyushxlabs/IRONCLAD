@@ -7,14 +7,33 @@ conforming strictly to:
 - .agents/rules/ui-non-goals-interface-boundaries.md
 """
 
+# ruff: noqa: E402
+
 from __future__ import annotations
 
 import asyncio
 import os
+import sys
 import tempfile
+from pathlib import Path
+
+# Force repository root into sys.path for Streamlit Cloud execution
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 import streamlit as st
 from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+# Map Streamlit Cloud secrets to os.environ if present
+try:
+    for key, val in st.secrets.items():
+        if isinstance(val, str) and key not in os.environ:
+            os.environ[key] = val
+except Exception:
+    pass
 
 from src.agents.graph import build_ironclad_graph
 from src.state.checkpointing import get_checkpoint_manager
@@ -32,8 +51,6 @@ from src.ui.generative_ui import (
 )
 from src.ui.hitl_resumption import submit_decision
 from src.ui.stream_consumer import StreamConsumer, UIStateAccumulator
-
-load_dotenv(override=True)
 
 st.set_page_config(
     page_title="IRONCLAD — Retainage & Lien Sentinel",

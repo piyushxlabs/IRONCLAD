@@ -64,3 +64,6 @@ htmlcov/
 Thumbs.db
 .idea/
 extra.md
+demo video assets/
+*.mp4
+*.mov

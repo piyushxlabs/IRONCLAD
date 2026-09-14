@@ -1,21 +1,21 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # STEP COMPLETION CHECKLIST
-# Dynamic Model Resolution via Environment Variable (Zero-UI-Touch)
+# Fix Streamlit Cloud Deployment & Align UI with Next.js Console
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⏰ BEFORE running the next prompt — do these first:
 
-[ ] Run live model invocation test to verify dynamic model resolution:
+[ ] Verify Streamlit headless startup with sys.path root resolution:
     ```
-    uv run python -c "from dotenv import load_dotenv; load_dotenv(override=True); import asyncio; from src.models import get_model_invoker; inv = get_model_invoker('staging'); res = asyncio.run(inv.invoke_reasoning('State: TX. Clause: Pay when paid.', 'Classify')); print('ACTIVE MODEL RESPONSE:', res[:120])"
+    uv run python -c "import sys; from pathlib import Path; root = Path('.').resolve(); sys.path.insert(0, str(root)); from src.agents.graph import build_ironclad_graph; g = build_ironclad_graph(); print('GRAPH BUILT SUCCESSFULLY:', g is not None)"
     ```
-    Expected: Loud terminal banner `[LIVE GEMINI CALL] Model: gemini-3.5-flash-lite` followed by model response in ~2s.
+    Expected: `GRAPH BUILT SUCCESSFULLY: True`
 
-[ ] Verify ModelCatalog unit test passes with default resolution and dynamic overrides:
+[ ] Verify Streamlit UI unit and integration tests:
     ```
-    uv run pytest tests/unit/test_models.py
+    uv run pytest tests/unit/test_ui_components.py tests/integration/test_streamlit_app_flow.py
     ```
-    Expected: 4 passed in ~0.2s.
+    Expected: 11 passed in pytest.
 
 [ ] Run full regression test suite (162 tests):
     ```
@@ -29,37 +29,31 @@
     ```
     Expected: `All checks passed!`
 
-[ ] Verify Next.js frontend build remains 100% untouched and functional:
+[ ] Verify root requirements.txt contains essential runtime dependencies:
     ```
-    cd frontend && pnpm build
+    powershell -Command "Select-String -Path requirements.txt -Pattern 'strands-agents', 'google-genai', 'pydantic'"
     ```
-    Expected: Compiled successfully with Next.js 16.3.5 (Turbopack).
+    Expected: All three packages matched in requirements.txt.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏰ AFTER code was generated — do these now:
 
-[ ] Start FastAPI Server and Next.js Frontend:
-    1. Terminal 1:
-       ```
-       uv run uvicorn src.server:app --port 8000
-       ```
-    2. Terminal 2:
-       ```
-       cd frontend && pnpm dev
-       ```
-    3. Open `http://localhost:3000` in browser.
-    4. Confirm frontend displays `[Gemini 3.8 Flash Staging]` badge (UI untouched).
-    5. Run an audit and observe Terminal 1 output: It executes against `gemini-3.5-flash-lite` with loud logging, preserving free-tier request quota (500 RPD).
+[ ] Push commit to GitHub to trigger automatic Streamlit Cloud rebuild:
+    ```
+    git add .
+    git commit -m "Fix: Streamlit Cloud deployment sys.path resolution, root requirements.txt, and UI parity"
+    git push origin main
+    ```
+    Expected: Streamlit Community Cloud detects git push and rebuilds container successfully.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ WHAT GOT BUILT THIS STEP
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] Config: `src/models.py` — Decoupled staging model resolution with `ModelCatalog.get_model_id()` dynamically reading `GEMINI_STAGING_MODEL` (default: `"gemini-3.8-flash"`) and `GEMINI_EXECUTION_MODEL`
-[ ] Provider: `src/providers/staging_runtime.py` — Target model defaults to `GEMINI_STAGING_MODEL` with automatic 429/503 failover resilience to `gemini-3.1-flash-lite`
-[ ] Environment: `.env.example` — Added `GEMINI_STAGING_MODEL` and `GEMINI_EXECUTION_MODEL` configuration templates
-[ ] Environment: `.env` — Configured `GEMINI_STAGING_MODEL=gemini-3.5-flash-lite` and `GEMINI_EXECUTION_MODEL=gemini-3.5-flash-lite`
-[ ] Tests: `tests/unit/test_models.py` — Added monkeypatch assertions verifying default fallback to `gemini-3.8-flash` when unset and dynamic env resolution when set
+[ ] File: `src/ui/app.py` — Dynamic `REPO_ROOT` insertion into `sys.path` and automatic `st.secrets` mapping to `os.environ`
+[ ] File: `requirements.txt` — Root production dependency manifest for Streamlit Cloud build workers
+[ ] Config: `.streamlit/config.toml` — Aligned theme palette (`#0B0F19`, `#111827`, `#3B82F6`, `#F9FAFB`) and headless server configuration
+[ ] Feature: Streamlit Cloud Compatibility — Seamless cloud deployment on Streamlit Community Cloud with zero AWS credential dependencies
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🧪 TESTING & VERIFICATION
@@ -67,7 +61,7 @@
 
 Test 1 — Files Exist:
 ```
-powershell -Command "Test-Path src/models.py, src/providers/staging_runtime.py, tests/unit/test_models.py"
+powershell -Command "Test-Path src/ui/app.py, requirements.txt, .streamlit/config.toml"
 ```
 ✅ Expected: True, True, True
 ❌ If missing: Check repository git status
@@ -79,12 +73,12 @@ uv run pytest
 ✅ Expected: 162 passed in pytest
 ❌ If errors: Run `uv run pytest -v`
 
-Test 3 — Live Dynamic Model Invocation:
+Test 3 — UI Flow Tests:
 ```
-uv run python -c "from dotenv import load_dotenv; load_dotenv(override=True); import asyncio; from src.models import get_model_invoker; inv = get_model_invoker('staging'); res = asyncio.run(inv.invoke_reasoning('State: TX. Clause: Pay when paid.', 'Classify')); print('ACTIVE MODEL RESPONSE:', res[:120])"
+uv run pytest tests/unit/test_ui_components.py tests/integration/test_streamlit_app_flow.py
 ```
-✅ Expected: Model `gemini-3.5-flash-lite` invoked and live response printed
-❌ If errors: Verify `GEMINI_API_KEY` in `.env`
+✅ Expected: 11 passed
+❌ If errors: Inspect failing test assertion
 
 Test 4 — Static Linting Check:
 ```
@@ -102,13 +96,14 @@ Test 5 — Security Check:
     ❌ If missing: Add `.env` to `.gitignore` immediately
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 GIT COMMIT
+📦 GIT COMMIT & PUSH
 (Run this ONLY after all above checks pass)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ```
 git add .
-git commit -m "Step: Dynamic Model Resolution via Environment Variable — decoupled model IDs in models.py and staging_runtime.py"
+git commit -m "Fix: Streamlit Cloud deployment sys.path resolution, root requirements.txt, and UI parity"
+git push origin main
 ```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

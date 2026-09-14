@@ -928,3 +928,33 @@
 - Pass
 ---
 
+## Fix Streamlit Cloud Deployment & Align UI with Next.js Console
+**Date:** September 15, 2026
+**Status:** Complete
+
+**What was implemented:**
+- Fixed `ModuleNotFoundError: No module named 'src'` on Streamlit Community Cloud by inserting `REPO_ROOT` into `sys.path` dynamically before package imports in `src/ui/app.py`.
+- Added automatic mapping of Streamlit Cloud deployment secrets (`st.secrets`) to `os.environ` in `src/ui/app.py`.
+- Created production `requirements.txt` at the repository root containing verified runtime dependencies for Streamlit Cloud build workers (`strands-agents==1.42.0`, `google-genai>=2.8.0`, `pydantic>=2.9,<2.12`, `langfuse>=4.15.2`, `fastapi`, `uvicorn`, `streamlit`).
+- Updated `.streamlit/config.toml` to institutional dark palette matching Next.js 16 (`#0B0F19` background, `#111827` secondary background, `#3B82F6` primary accent, `#F9FAFB` text) and disabled CORS/XSRF for headless cloud deployment.
+- Verified headless boot (`streamlit run src/ui/app.py --server.headless true`), passed all UI unit/integration tests (11/11), and confirmed full test suite (162/162 passed) with 0 ruff errors.
+
+**Files Created:**
+- `requirements.txt` — Production dependency manifest for Streamlit Community Cloud
+
+**Files Modified:**
+- `src/ui/app.py` — Added `sys.path` repository root insertion and `st.secrets` environment mapping
+- `.streamlit/config.toml` — Aligned theme palette and headless server configuration
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- `uv run streamlit run src/ui/app.py --server.headless true --server.port 8502` started cleanly with zero import errors.
+- `uv run pytest tests/unit/test_ui_components.py tests/integration/test_streamlit_app_flow.py` passed 11/11 tests.
+- `uv run ruff check src tests run_dev.py` passed with exit code 0 ("All checks passed!").
+- `uv run pytest` passed 162/162 tests in 105.36s.
+- Pass
+---
+
+

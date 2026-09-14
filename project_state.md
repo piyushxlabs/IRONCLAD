@@ -1,6 +1,6 @@
 # PROJECT STATE
 
-- Last Completed Step: Dynamic Model Resolution via Environment Variable (Zero-UI-Touch)
+- Last Completed Step: Fix Streamlit Cloud Deployment & Align UI with Next.js Console
 - Implemented Features:
   - Environment variable scaffolding (`.env.example`, `.env`)
   - Git ignore protections for credentials and local cache artifacts
@@ -36,6 +36,7 @@
   - Active Runtime Alignment: Explicit `load_dotenv(override=True)` across FastAPI server and UI runners, dynamic fallback to `"staging"` (Gemini 3.8 Flash), eliminating mock hardcoding across frontend API client and header badges
   - Live Gemini 3.8 Flash Invocation & Loud Telemetry Verification: Wired live invoker into `graph.execute`, added console-safe `_safe_log` encoding protections, high-visibility live call logging, and automated `gemini-3.6-flash` failover resilience for 100% test and execution uptime
   - Dynamic Model Resolution via Environment Variable (Zero-UI-Touch): Decoupled model IDs in `src/models.py` and `src/providers/staging_runtime.py` via `GEMINI_STAGING_MODEL` (`gemini-3.5-flash-lite`) and `GEMINI_EXECUTION_MODEL` with zero UI modifications, protecting showcase quota (500 RPD) while passing all 162 tests
+  - Fix Streamlit Cloud Deployment & Align UI with Next.js Console: Added dynamic `sys.path` repository root insertion and `st.secrets` environment mapping in `src/ui/app.py`, created root `requirements.txt` for Streamlit Cloud build workers, and aligned `.streamlit/config.toml` institutional dark palette matching Next.js 16 console with 162/162 tests passing
 - Pending Next Step: Step 23: Production Readiness Check & Final Submission Polish
 - Known Issues / Blockers: None
 
