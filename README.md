@@ -25,10 +25,10 @@
 > ### 📺 Official Video Walkthrough & Architecture Deep-Dive (3:24 Master Demo)
 >
 > <div align="center">
->   <a href="https://youtu.be/laVDo52TTZ0" target="_blank">
+>   <a href="https://youtu.be/7N15Rr76CMI" target="_blank">
 >     <img src="./assets/demo_thumbnail.png" alt="IRONCLAD Sentinel Live Demo" width="100%" />
 >   </a>
->   <p><strong>▶️ <a href="https://youtu.be/laVDo52TTZ0" target="_blank">Watch IRONCLAD Sentinel Live Demo & Architecture Walkthrough</a></strong></p>
+>   <p><strong>▶️ <a href="https://youtu.be/7N15Rr76CMI" target="_blank">Watch IRONCLAD Sentinel Live Demo & Architecture Walkthrough</a></strong></p>
 >   <p><em>Tri-Track Multi-Agent DAG · Live Gemini AI Invocation · Pre-Dated Notary Fraud Interception · 1-Click HITL Gate · 162/162 Tests</em></p>
 > </div>
 
@@ -778,6 +778,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](./LICEN
 [![Live Sandbox](https://img.shields.io/badge/Live_Sandbox-ironclad--sentinel.streamlit.app-10B981?style=for-the-badge)](https://ironclad-sentinel.streamlit.app/)
 [![AWS Builder Story](https://img.shields.io/badge/AWS_Builder_Story_%28%2B0.6_Bonus%29-builder.aws.com-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://builder.aws.com/content/3JKbuSq91ClWvMXmgieIn7xmg2C/building-ironclad-sentinel-autonomous-construction-billing-audit-with-aws-strands-agents-or-agents-for-humans)
 [![GitHub](https://img.shields.io/badge/GitHub-piyushxlabs%2FIRONCLAD-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/piyushxlabs/IRONCLAD)
-[![Video Walkthrough](https://img.shields.io/badge/Video_Walkthrough-YouTube_3:24-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/laVDo52TTZ0)
+[![Video Walkthrough](https://img.shields.io/badge/Video_Walkthrough-YouTube_3:24-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/7N15Rr76CMI)
 
 </div>
