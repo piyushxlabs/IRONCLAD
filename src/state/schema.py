@@ -1,0 +1,1 @@
+"""IroncladState typed schema definition."""

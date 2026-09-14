@@ -1,0 +1,1 @@
+"""OpenTelemetry dual-exporter instrumentation."""
