@@ -1,0 +1,26 @@
+[project]
+name = "ironclad-agent"
+version = "0.1.0"
+description = "IRONCLAD: Autonomous Retainage & Lien-Discharge Sentinel"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "strands-agents[otel]==1.42.0",
+    "bedrock-agentcore",
+    "google-genai",
+    "pydantic>=2.9,<2.12",
+    "boto3",
+    "langfuse==4.15.2",
+    "streamlit",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "deepeval",
+    "ruff",
+    "mypy",
+]
+
+[tool.uv]
