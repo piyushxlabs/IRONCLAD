@@ -153,3 +153,9 @@ class ModelInvoker:
 
 # Global invoker instance
 default_invoker = ModelInvoker()
+
+
+def get_model_invoker(runtime_mode: str = "staging") -> ModelInvoker:
+    """Retrieve or create a ModelInvoker instance for the active runtime."""
+    return default_invoker
+
