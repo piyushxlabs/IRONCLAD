@@ -18,6 +18,12 @@ from src.ui.event_types import (
     parse_sse_event,
     parse_stream_event_dict,
 )
+from src.ui.hitl_resumption import (
+    handle_approve_release,
+    handle_escalate_legal,
+    handle_hold_request_correction,
+    submit_decision,
+)
 from src.ui.stream_consumer import (
     ReasoningTraceEntry,
     StreamConsumer,
@@ -44,6 +50,10 @@ __all__ = [
     "UIStateAccumulator",
     "filter_sensitive_reasoning",
     "format_sse_event",
+    "handle_approve_release",
+    "handle_escalate_legal",
+    "handle_hold_request_correction",
     "parse_sse_event",
     "parse_stream_event_dict",
+    "submit_decision",
 ]
