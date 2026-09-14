@@ -1,0 +1,34 @@
+.docs/
+docs/
+
+.agents/
+agents/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Python & Virtual Environments
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local database & state
+*.sqlite
+*.db
+
+
+# AI Agent internal rules, prompts & scratchpad logs
+.agents/
+.cursor/
+progress_log.md
+project_state.md
+TECHNICAL_NOTES.md
+do_after_completion.md
+implementation_plan.md
+walkthrough.md
