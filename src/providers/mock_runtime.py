@@ -112,8 +112,55 @@ class MockRuntime(BaseRuntimeProtocol):
                 ) from e
 
         # Built-in fallback tool responses
-        defaults = {
-            "extract_draw_packet_metadata": {
+        if tool_name == "extract_draw_packet_metadata":
+            uri = str(tool_input.get("pdf_uri", ""))
+            if "defect" in uri or "draw_2" in uri:
+                return {
+                    "success": True,
+                    "document_type_detected": "G703_CONTINUATION",
+                    "line_items": [
+                        {
+                            "line_item_id": "LI-001",
+                            "description": "Electrical Conduit & Rough-in",
+                            "contract_retainage_pct": None,  # Missing retainage clause triggers discrepancy
+                            "current_billed": 25000.00,
+                            "stored_materials": 0.00,
+                            "prior_payments": 0.00,
+                        }
+                    ],
+                    "waiver_records": [
+                        {
+                            "waiver_id": "W-002",
+                            "waiver_type": "CONDITIONAL_PROGRESS",
+                            "notary_execution_date": "2026-08-01",  # Pre-dated notary before draw check date (2026-09-01)
+                            "associated_line_item_id": "LI-001",
+                        }
+                    ],
+                    "low_confidence_fields": [],
+                    "error": None,
+                }
+            if "edge" in uri or "draw_3" in uri:
+                return {
+                    "success": True,
+                    "document_type_detected": "G703_CONTINUATION",
+                    "line_items": [
+                        {
+                            "line_item_id": "LI-001",
+                            "description": "Plumbing Rough-in & Underground",
+                            "contract_retainage_pct": 0.10,
+                            "current_billed": 18500.00,
+                            "stored_materials": 2500.00,
+                            "prior_payments": 0.00,
+                        }
+                    ],
+                    "waiver_records": [],  # Empty waivers triggers MISSING_WAIVER defect
+                    "low_confidence_fields": [
+                        "contract_retainage_pct"
+                    ],
+                    "error": None,
+                }
+            # Default clean case (draw_4_hvac_invoice.pdf or standard mock)
+            return {
                 "success": True,
                 "document_type_detected": "G703_CONTINUATION",
                 "line_items": [
@@ -136,15 +183,14 @@ class MockRuntime(BaseRuntimeProtocol):
                 ],
                 "low_confidence_fields": [],
                 "error": None,
-            },
-            "dispatch_decision_notification": {
+            }
+
+        if tool_name == "dispatch_decision_notification":
+            return {
                 "success": True,
                 "dispatched_to": ["GENERAL_CONTRACTOR", "OWNER", "SUBCONTRACTOR"],
                 "error": None,
-            },
-        }
-        if tool_name in defaults:
-            return defaults[tool_name]
+            }
 
         return {"success": True, "tool_name": tool_name, "input_echo": tool_input}
 

@@ -32,8 +32,8 @@ class ModelCatalog(BaseModel):
     bedrock_secondary: str = "anthropic.claude-3-5-haiku-20241022-v1:0"
 
     # Staging Google GenAI model IDs
-    staging_primary: str = "gemini-2.5-flash"
-    staging_secondary: str = "gemini-2.5-flash"
+    staging_primary: str = "gemini-3.8-flash"
+    staging_secondary: str = "gemini-3.8-flash"
 
     # Mock identifiers
     mock_primary: str = "mock-sonnet-5"

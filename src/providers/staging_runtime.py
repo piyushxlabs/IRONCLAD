@@ -17,30 +17,40 @@ from src.errors import StateValidationError, ToolExecutionError
 from src.providers.base_runtime import BaseRuntimeProtocol
 
 
+def _clean_schema_for_gemini(schema: Any) -> Any:
+    """Recursively strip unsupported JSON Schema keys (additionalProperties, title, $defs) for Gemini API."""
+    if isinstance(schema, dict):
+        return {
+            k: _clean_schema_for_gemini(v)
+            for k, v in schema.items()
+            if k not in ("additionalProperties", "additional_properties", "title", "$defs")
+        }
+    if isinstance(schema, list):
+        return [_clean_schema_for_gemini(item) for item in schema]
+    return schema
+
+
 class StagingRuntime(BaseRuntimeProtocol):
-    """Live staging engine interfacing with Google Gemini 3.8 Flash via google-genai SDK."""
+    """Zero-cost live staging runtime powered by Google Gemini 3.8 Flash via official google-genai SDK."""
 
     def __init__(
         self,
         api_key: str | None = None,
-        default_model: str = "gemini-2.5-flash",
+        default_model: str = "gemini-3.8-flash",
     ) -> None:
         self.api_key = api_key or os.getenv("GEMINI_API_KEY", "")
         self.default_model = default_model
-        self._client: genai.Client | None = None
         self._checkpoints: dict[str, dict[str, Any]] = {}
         self._session_to_latest_cp: dict[str, str] = {}
+        self._client: genai.Client | None = None
 
     def _get_client(self) -> genai.Client:
-        """Lazy initialization of Google GenAI client."""
+        """Lazily initialize Google GenAI client."""
         if self._client is None:
             if not self.api_key:
-                # Attempt reading from environment again
-                self.api_key = os.getenv("GEMINI_API_KEY", "")
-            if not self.api_key:
-                raise ToolExecutionError(
-                    message="GEMINI_API_KEY environment variable is not set. Required for staging runtime.",
-                    incident_context={"runtime_mode": "staging"},
+                raise StateValidationError(
+                    message="GEMINI_API_KEY environment variable is missing for staging runtime.",
+                    incident_context={"runtime": "staging"},
                     node_name="StagingRuntime",
                 )
             self._client = genai.Client(api_key=self.api_key)
@@ -88,7 +98,7 @@ class StagingRuntime(BaseRuntimeProtocol):
 
         if structured_output_schema is not None:
             config_kwargs["response_mime_type"] = "application/json"
-            config_kwargs["response_schema"] = structured_output_schema
+            config_kwargs["response_schema"] = _clean_schema_for_gemini(structured_output_schema.model_json_schema())
 
         config = types.GenerateContentConfig(**config_kwargs)
 
@@ -124,6 +134,50 @@ class StagingRuntime(BaseRuntimeProtocol):
     ) -> dict[str, Any]:
         """Execute MCP or synthetic tool call in staging environment."""
         if tool_name == "extract_draw_packet_metadata":
+            uri = str(tool_input.get("pdf_uri", ""))
+            if "defect" in uri or "draw_2" in uri:
+                return {
+                    "success": True,
+                    "document_type_detected": "G703_CONTINUATION",
+                    "line_items": [
+                        {
+                            "line_item_id": "LI-001",
+                            "description": "Electrical Conduit & Rough-in",
+                            "contract_retainage_pct": None,
+                            "current_billed": 25000.00,
+                            "stored_materials": 0.00,
+                            "prior_payments": 0.00,
+                        }
+                    ],
+                    "waiver_records": [
+                        {
+                            "waiver_id": "W-002",
+                            "waiver_type": "CONDITIONAL_PROGRESS",
+                            "notary_execution_date": "2026-08-01",
+                            "associated_line_item_id": "LI-001",
+                        }
+                    ],
+                    "low_confidence_fields": [],
+                    "error": None,
+                }
+            if "edge" in uri or "draw_3" in uri:
+                return {
+                    "success": True,
+                    "document_type_detected": "G703_CONTINUATION",
+                    "line_items": [
+                        {
+                            "line_item_id": "LI-001",
+                            "description": "Plumbing Rough-in & Underground",
+                            "contract_retainage_pct": 0.10,
+                            "current_billed": 18500.00,
+                            "stored_materials": 2500.00,
+                            "prior_payments": 0.00,
+                        }
+                    ],
+                    "waiver_records": [],
+                    "low_confidence_fields": ["contract_retainage_pct"],
+                    "error": None,
+                }
             return {
                 "success": True,
                 "document_type_detected": "G703_CONTINUATION",

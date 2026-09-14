@@ -35,11 +35,11 @@ def test_model_catalog_resolution() -> None:
     # Staging
     assert (
         invoker.resolve_model_id(ModelRole.PRIMARY_REASONING, runtime_mode="staging")
-        == "gemini-2.5-flash"
+        == "gemini-3.8-flash"
     )
     assert (
         invoker.resolve_model_id(ModelRole.SECONDARY_EXECUTION, runtime_mode="staging")
-        == "gemini-2.5-flash"
+        == "gemini-3.8-flash"
     )
 
     # Mock
