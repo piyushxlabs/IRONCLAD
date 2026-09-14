@@ -13,7 +13,7 @@ import uuid
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 try:
     from botocore.exceptions import BotoCoreError, ClientError
@@ -71,9 +71,11 @@ class BaseCheckpointManager(ABC):
 class MockCheckpointManager(BaseCheckpointManager):
     """In-memory checkpoint store for high-speed offline testing."""
 
+    _checkpoints: ClassVar[dict[str, dict[str, Any]]] = {}
+    _session_to_ids: ClassVar[dict[str, list[str]]] = {}
+
     def __init__(self) -> None:
-        self._checkpoints: dict[str, dict[str, Any]] = {}
-        self._session_to_ids: dict[str, list[str]] = {}
+        pass
 
     async def write_checkpoint(
         self,
@@ -540,6 +542,9 @@ class AgentCoreMemorySessionManager(BaseCheckpointManager):
         )
 
 
+_MOCK_CHECKPOINT_SINGLETON = MockCheckpointManager()
+
+
 def get_checkpoint_manager(
     mode: str | None = None,
     db_path: str = "checkpoints.db",
@@ -548,10 +553,10 @@ def get_checkpoint_manager(
     active_mode = (mode or os.environ.get("IRONCLAD_RUNTIME_MODE", "staging")).lower()
 
     if active_mode == "mock":
-        return MockCheckpointManager()
+        return _MOCK_CHECKPOINT_SINGLETON
     if active_mode == "bedrock":
         return AgentCoreMemorySessionManager(db_path=db_path)
     if active_mode == "staging":
         return SQLiteCheckpointManager(db_path=db_path)
 
-    return MockCheckpointManager()
+    return _MOCK_CHECKPOINT_SINGLETON
