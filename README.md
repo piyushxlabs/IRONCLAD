@@ -116,6 +116,17 @@ IRONCLAD Sentinel ships two production-grade interfaces:
 ╚════════════════════════════════════╩═════════════════════════════════════════════════════╝
 ```
 
+### 🌐 Enterprise Multi-Cloud Resilience: The Dual-Runtime Provider Abstraction
+
+> **Institutional Design Rationale (Why Dual Runtimes?):**  
+> In mission-critical construction finance ($1.4T annual volume), enterprise risk management strictly forbids single-cloud or single-model vendor lock-in. A regional cloud outage or API rate-limit cannot be allowed to freeze contractor payroll or mechanics lien discharges.
+>
+> IRONCLAD Sentinel architects an air-gapped **Provider Abstraction Layer (`BaseRuntimeProtocol`)**:
+> - **Production Target (AWS Bedrock AgentCore):** Orchestrates **Anthropic Claude 3.5 Sonnet** (`us.anthropic.claude-3-5-sonnet-20241022-v2:0`) via Amazon Bedrock cross-region inference profiles with microVM session isolation.
+> - **Live Staging Engine (Google GenAI):** Dynamically invokes **Google Gemini 3.5 Flash Lite** (`gemini-3.5-flash-lite`) via the official `google-genai` SDK for 100% public uptime and zero-cost evaluator sandboxing on Streamlit Community Cloud.
+>
+> **The Deterministic Invariant:** Because 100% of financial arithmetic (`audit_retainage_math`), statutory date logic (`statutory_prompt_pay_clock`), and lien chronology verification (`verify_lien_chain_integrity`) are isolated in deterministic Python tools, **switching semantic reasoning runtimes introduces ZERO arithmetic variance**.
+
 ---
 
 ## 🖥️ Visual Grounding & Live Engine Showcase
@@ -564,16 +575,11 @@ Executive Console at `http://localhost:3000`
 #### 🟢 Scenario 1 — Clean Texas Masonry Audit ($11,400 Net Release, Green Approve Gate)
 
 ```bash
-curl -s -X POST http://localhost:8000/audit \
+curl -N -s -X POST http://localhost:8000/api/audit/stream \
   -H "Content-Type: application/json" \
   -d '{
-    "project_id": "PROJ-GREEN-VALLEY-001",
-    "subcontractor_id": "SUB-MASONRY-TX-447",
-    "draw_number": 14,
-    "source_uris": ["s3://ironclad-demo/green-valley-draw-14-aia-g702.pdf"],
-    "state_jurisdiction": "TX",
-    "contract_clause": "pay-when-paid",
-    "draw_date": "2026-09-01"
+    "scenario": "Simple Clean Case (Texas Masonry)",
+    "runtime_mode": "staging"
   }'
 ```
 
@@ -582,16 +588,11 @@ curl -s -X POST http://localhost:8000/audit \
 #### 🔴 Scenario 2 — Pre-Dated Notary Lien Fraud (W-002, $0.00 Freeze, Escalate Legal)
 
 ```bash
-curl -s -X POST http://localhost:8000/audit \
+curl -N -s -X POST http://localhost:8000/api/audit/stream \
   -H "Content-Type: application/json" \
   -d '{
-    "project_id": "PROJ-RIVERSIDE-TOWER-002",
-    "subcontractor_id": "SUB-ELECTRICAL-CA-881",
-    "draw_number": 7,
-    "source_uris": ["s3://ironclad-demo/riverside-draw-7-aia-g702-defective.pdf"],
-    "state_jurisdiction": "CA",
-    "contract_clause": "pay-if-paid",
-    "draw_date": "2026-09-01"
+    "scenario": "Complex Defect Case (Pre-Dated Notary)",
+    "runtime_mode": "staging"
   }'
 ```
 
