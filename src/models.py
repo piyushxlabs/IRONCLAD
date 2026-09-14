@@ -39,6 +39,30 @@ class ModelCatalog(BaseModel):
     mock_primary: str = "mock-sonnet-5"
     mock_secondary: str = "mock-haiku-4.5"
 
+    def get_model_id(self, role: ModelRole, runtime_mode: str = "staging") -> str:
+        """Resolve model ID dynamically with environment variable fallback support."""
+        import os
+
+        mode = runtime_mode.strip().lower()
+        if mode == "bedrock":
+            return (
+                self.bedrock_primary
+                if role == ModelRole.PRIMARY_REASONING
+                else self.bedrock_secondary
+            )
+        if mode == "staging":
+            if role == ModelRole.PRIMARY_REASONING:
+                return os.getenv("GEMINI_STAGING_MODEL", self.staging_primary)
+            return os.getenv(
+                "GEMINI_EXECUTION_MODEL",
+                os.getenv("GEMINI_STAGING_MODEL", self.staging_secondary),
+            )
+        return (
+            self.mock_primary
+            if role == ModelRole.PRIMARY_REASONING
+            else self.mock_secondary
+        )
+
 
 DEFAULT_CATALOG = ModelCatalog()
 
@@ -60,24 +84,7 @@ class ModelInvoker:
         runtime_mode: str = "staging",
     ) -> str:
         """Resolve exact model identifier for a given role and runtime."""
-        mode = runtime_mode.strip().lower()
-        if mode == "bedrock":
-            return (
-                self.catalog.bedrock_primary
-                if role == ModelRole.PRIMARY_REASONING
-                else self.catalog.bedrock_secondary
-            )
-        if mode == "staging":
-            return (
-                self.catalog.staging_primary
-                if role == ModelRole.PRIMARY_REASONING
-                else self.catalog.staging_secondary
-            )
-        return (
-            self.catalog.mock_primary
-            if role == ModelRole.PRIMARY_REASONING
-            else self.catalog.mock_secondary
-        )
+        return self.catalog.get_model_id(role, runtime_mode=runtime_mode)
 
     async def invoke_reasoning(
         self,

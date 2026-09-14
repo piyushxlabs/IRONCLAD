@@ -17,8 +17,10 @@ class SampleStructuredOutput(BaseModel):
     score: float = Field(default=1.0)
 
 
-def test_model_catalog_resolution() -> None:
+def test_model_catalog_resolution(monkeypatch: pytest.MonkeyPatch) -> None:
     """Verify model ID resolution across roles and runtimes."""
+    monkeypatch.delenv("GEMINI_STAGING_MODEL", raising=False)
+    monkeypatch.delenv("GEMINI_EXECUTION_MODEL", raising=False)
     catalog = ModelCatalog()
     invoker = ModelInvoker(catalog=catalog)
 
@@ -32,7 +34,7 @@ def test_model_catalog_resolution() -> None:
         == "us.anthropic.claude-3-5-haiku-20241022-v1:0"
     )
 
-    # Staging
+    # Staging default (when env var is unset)
     assert (
         invoker.resolve_model_id(ModelRole.PRIMARY_REASONING, runtime_mode="staging")
         == "gemini-3.8-flash"
@@ -40,6 +42,18 @@ def test_model_catalog_resolution() -> None:
     assert (
         invoker.resolve_model_id(ModelRole.SECONDARY_EXECUTION, runtime_mode="staging")
         == "gemini-3.8-flash"
+    )
+
+    # Staging dynamic override via env
+    monkeypatch.setenv("GEMINI_STAGING_MODEL", "gemini-3.5-flash-lite")
+    monkeypatch.setenv("GEMINI_EXECUTION_MODEL", "gemini-3.5-flash-lite")
+    assert (
+        invoker.resolve_model_id(ModelRole.PRIMARY_REASONING, runtime_mode="staging")
+        == "gemini-3.5-flash-lite"
+    )
+    assert (
+        invoker.resolve_model_id(ModelRole.SECONDARY_EXECUTION, runtime_mode="staging")
+        == "gemini-3.5-flash-lite"
     )
 
     # Mock

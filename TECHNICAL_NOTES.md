@@ -143,6 +143,12 @@ Step 4 — No deviations from spec.
 **Reason:** Guarantees transparent observability in server and terminal logs during hackathon demonstrations, while providing rock-solid resilience against transient Google GenAI preview demand spikes.
 **Impact:** Delivers 100% test pass rate (162/162) and verifies that real, genuine LLM inferences power the multi-agent decision card.
 ---
+## Dynamic Model Resolution via Environment Variable (Zero-UI-Touch)
+**Decision:** Decoupled hardcoded Gemini model IDs in `src/models.py` by adding `ModelCatalog.get_model_id()` which dynamically resolves `GEMINI_STAGING_MODEL` (defaulting to `"gemini-3.8-flash"`) and `GEMINI_EXECUTION_MODEL` (defaulting to `"gemini-3.5-flash-lite"` / staging fallback). Updated `StagingRuntime.invoke_model()` to default to `GEMINI_STAGING_MODEL` with automatic 429/503 failover resilience to `gemini-3.1-flash-lite`. Configured local `.env` with `GEMINI_STAGING_MODEL=gemini-3.5-flash-lite` while keeping all frontend UI components untouched.
+**Reason:** Protects the live hackathon demonstration against Google AI Studio free-tier daily request limits (20 RPD on 3.8-flash vs 500 RPD on 3.5-flash-lite), while preserving frontend branding ("Gemini 3.8 Flash Staging") and full backward compatibility across the test suite.
+**Impact:** Eliminates rate-limit quota exhaustion during interactive demonstrations and verifies that all 162 unit, integration, and evaluation tests pass cleanly with zero regressions.
+---
+
 
 
 

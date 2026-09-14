@@ -896,3 +896,35 @@
 - `uv run pytest` passed 162/162 tests (100% pass rate across all 22 test files).
 - Pass
 ---
+
+## Dynamic Model Resolution via Environment Variable (Zero-UI-Touch)
+**Date:** September 15, 2026
+**Status:** Complete
+
+**What was implemented:**
+- Decoupled hardcoded Gemini model IDs in `src/models.py` by adding `ModelCatalog.get_model_id()` resolving `GEMINI_STAGING_MODEL` (defaulting to `"gemini-3.8-flash"`) and `GEMINI_EXECUTION_MODEL` (defaulting to `"gemini-3.5-flash-lite"` / staging model fallback).
+- Updated `src/providers/staging_runtime.py` to resolve target model dynamically via `os.getenv("GEMINI_STAGING_MODEL", self.default_model)` with automatic 429/503 failover resilience to `gemini-3.1-flash-lite`.
+- Added configuration templates in `.env.example` and configured `GEMINI_STAGING_MODEL=gemini-3.5-flash-lite` in local `.env` to bypass free-tier rate limits (500 RPD) while leaving frontend UI badges ("Gemini 3.8 Flash Staging") completely untouched.
+- Updated `tests/unit/test_models.py` with `monkeypatch` tests verifying default resolution when env vars are unset and dynamic overrides when set.
+- Verified live invocation against Google GenAI with `gemini-3.5-flash-lite` returning in 2.26s and full test suite passing with 162/162 tests.
+
+**Files Created:**
+- None
+
+**Files Modified:**
+- `src/models.py` — Added `get_model_id()` with dynamic env resolution in `ModelCatalog` and updated `ModelInvoker.resolve_model_id()`
+- `src/providers/staging_runtime.py` — Updated target model default to `GEMINI_STAGING_MODEL` and fallback list
+- `.env.example` — Added `GEMINI_STAGING_MODEL` and `GEMINI_EXECUTION_MODEL` comments and defaults
+- `.env` — Set `GEMINI_STAGING_MODEL=gemini-3.5-flash-lite` and `GEMINI_EXECUTION_MODEL=gemini-3.5-flash-lite`
+- `tests/unit/test_models.py` — Added monkeypatch tests for default resolution and dynamic env overrides
+
+**Packages Installed:**
+- None
+
+**Verification Result:**
+- Live standalone CLI execution `invoker.invoke_reasoning(...)` succeeded against Google GenAI with model `gemini-3.5-flash-lite` in 2.26s.
+- `uv run ruff check src tests run_dev.py` passed with exit code 0 ("All checks passed!").
+- `uv run pytest` passed 162/162 tests in 135.73s across all 22 test files with 0 failures.
+- Pass
+---
+

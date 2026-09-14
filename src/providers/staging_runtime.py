@@ -79,11 +79,11 @@ class StagingRuntime(BaseRuntimeProtocol):
     ) -> Any:
         """Execute non-blocking async inference using Gemini with optional schema constraint."""
         client = self._get_client()
-        target_model = model_id or self.default_model
+        target_model = model_id or os.getenv("GEMINI_STAGING_MODEL", self.default_model)
 
         # Normalize model identifier if Bedrock format was passed
         if "sonnet" in target_model.lower() or "haiku" in target_model.lower():
-            target_model = self.default_model
+            target_model = os.getenv("GEMINI_STAGING_MODEL", self.default_model)
 
         contents: list[Any] = []
 
@@ -115,8 +115,10 @@ class StagingRuntime(BaseRuntimeProtocol):
         config = types.GenerateContentConfig(**config_kwargs)
 
         models_to_try = [target_model]
-        if target_model == "gemini-3.8-flash" and "gemini-3.6-flash" not in models_to_try:
-            models_to_try.append("gemini-3.6-flash")
+        for fallback in ("gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-3.6-flash"):
+            if fallback not in models_to_try:
+                models_to_try.append(fallback)
+                break
 
         for current_model in models_to_try:
             _safe_log("\n" + "=" * 60)
