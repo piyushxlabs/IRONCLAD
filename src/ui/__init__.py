@@ -1,5 +1,6 @@
 """UI Presentation and Streaming Layer for IRONCLAD."""
 
+from src.ui.app import get_preset_packet, main
 from src.ui.event_types import (
     ApprovalRequiredEvent,
     BaseStreamEvent,
@@ -17,6 +18,17 @@ from src.ui.event_types import (
     format_sse_event,
     parse_sse_event,
     parse_stream_event_dict,
+)
+from src.ui.generative_ui import (
+    inject_custom_styles,
+    render_audit_trail_expander,
+    render_compliance_row,
+    render_decision_actions,
+    render_discrepancy_table,
+    render_financial_tiles,
+    render_header,
+    render_notification_toast,
+    render_status_banner,
 )
 from src.ui.hitl_resumption import (
     handle_approve_release,
@@ -50,10 +62,21 @@ __all__ = [
     "UIStateAccumulator",
     "filter_sensitive_reasoning",
     "format_sse_event",
+    "get_preset_packet",
     "handle_approve_release",
     "handle_escalate_legal",
     "handle_hold_request_correction",
+    "inject_custom_styles",
+    "main",
     "parse_sse_event",
     "parse_stream_event_dict",
+    "render_audit_trail_expander",
+    "render_compliance_row",
+    "render_decision_actions",
+    "render_discrepancy_table",
+    "render_financial_tiles",
+    "render_header",
+    "render_notification_toast",
+    "render_status_banner",
     "submit_decision",
 ]
