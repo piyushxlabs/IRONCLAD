@@ -12,6 +12,8 @@ dependencies = [
     "boto3",
     "langfuse==4.15.2",
     "streamlit",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0",
 ]
 
 [project.optional-dependencies]
@@ -21,6 +23,7 @@ dev = [
     "deepeval",
     "ruff",
     "mypy",
+    "httpx>=0.27.0",
 ]
 
 [tool.uv]
