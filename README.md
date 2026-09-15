@@ -36,7 +36,10 @@
 
 <div align="center">
 
-**[🚀 Live Interactive Sandbox](https://ironclad-sentinel.streamlit.app/)** &nbsp;•&nbsp; **[📰 AWS Builder Story (+0.6 Bonus)](https://builder.aws.com/content/3JKbuSq91ClWvMXmgieIn7xmg2C/building-ironclad-sentinel-autonomous-construction-billing-audit-with-aws-strands-agents-or-agents-for-humans)** &nbsp;•&nbsp; **[🏗️ Architecture Blueprint](#-complete-tri-track-multi-agent-dag-architecture)** &nbsp;•&nbsp; **[⚡ Quickstart for Judges](#-quickstart--testing-guide-for-judges)**
+**[🚀 Live Interactive Sandbox](https://ironclad-sentinel.streamlit.app/)** &nbsp;•&nbsp; **[🏗️ Architecture Blueprint](#-complete-tri-track-multi-agent-dag-architecture)** &nbsp;•&nbsp; **[⚡ Quickstart for Judges](#-quickstart--testing-guide-for-judges)**
+
+**📰 Official AWS Builder 3-Part Series (+0.6 Max Bonus):**  
+**[Part 1: Architecture](https://builder.aws.com/content/3JKbuSq91ClWvMXmgieIn7xmg2C/building-ironclad-sentinel-autonomous-construction-billing-audit-with-aws-strands-agents-or-agents-for-humans)** &nbsp;•&nbsp; **[Part 2: Multi-Agent DAG](https://builder.aws.com/content/3JL9DdCecVlUsb5WpGqHc0VwZoH/deep-dive-orchestrating-multi-agent-construction-audits-with-aws-strands-agents-sdk-or-agents-for-humans)** &nbsp;•&nbsp; **[Part 3: Bedrock AgentCore](https://builder.aws.com/content/3JLD2wzKj3sQjoqjvFzhjaxaLqy/zero-hallucination-construction-finance-deploying-bedrock-agentcore-and-deterministic-math-or-agents-for-humans)**
 
 </div>
 
@@ -776,8 +779,13 @@ This project is licensed under the **MIT License** — see the [LICENSE](./LICEN
 ---
 
 [![Live Sandbox](https://img.shields.io/badge/Live_Sandbox-ironclad--sentinel.streamlit.app-10B981?style=for-the-badge)](https://ironclad-sentinel.streamlit.app/)
-[![AWS Builder Story](https://img.shields.io/badge/AWS_Builder_Story_%28%2B0.6_Bonus%29-builder.aws.com-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://builder.aws.com/content/3JKbuSq91ClWvMXmgieIn7xmg2C/building-ironclad-sentinel-autonomous-construction-billing-audit-with-aws-strands-agents-or-agents-for-humans)
 [![GitHub](https://img.shields.io/badge/GitHub-piyushxlabs%2FIRONCLAD-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/piyushxlabs/IRONCLAD)
 [![Video Walkthrough](https://img.shields.io/badge/Video_Walkthrough-YouTube_3:24-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/7N15Rr76CMI)
+
+<br/>
+
+[![AWS Builder Story 1](https://img.shields.io/badge/AWS_Builder_Story_1-Building_IRONCLAD_Sentinel_%28%2B0.6%29-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://builder.aws.com/content/3JKbuSq91ClWvMXmgieIn7xmg2C/building-ironclad-sentinel-autonomous-construction-billing-audit-with-aws-strands-agents-or-agents-for-humans)
+[![AWS Builder Story 2](https://img.shields.io/badge/AWS_Builder_Story_2-Multi--Agent_DAG_Deep_Dive-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://builder.aws.com/content/3JL9DdCecVlUsb5WpGqHc0VwZoH/deep-dive-orchestrating-multi-agent-construction-audits-with-aws-strands-agents-sdk-or-agents-for-humans)
+[![AWS Builder Story 3](https://img.shields.io/badge/AWS_Builder_Story_3-Bedrock_AgentCore_Deployment-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://builder.aws.com/content/3JLD2wzKj3sQjoqjvFzhjaxaLqy/zero-hallucination-construction-finance-deploying-bedrock-agentcore-and-deterministic-math-or-agents-for-humans)
 
 </div>
